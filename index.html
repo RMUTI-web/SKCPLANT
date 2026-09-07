@@ -4,16 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>อพ.สธ. - SKCPlant</title>
-  <title>อพ.สธ. - SKCPlant</title>
 
-  <!-- นำโค้ดไอคอนมาวางตรงนี้ (ประมาณบรรทัดที่ 7) -->
+  <!-- Favicon & PWA -->
   <link rel="icon" type="image/png" sizes="32x32" href="LOGO-site.png">
   <link rel="apple-touch-icon" sizes="180x180" href="LOGO-site.png">
   <link rel="manifest" href="manifest.json">
 
-  <!-- PWA Meta Tags -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <!-- PWA Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#065f46">
@@ -43,7 +39,6 @@
     <!-- Top Bar: Admin Status & Theme/Settings Buttons -->
     <div class="flex items-center justify-between mb-2 z-20">
       <div>
-        <!-- Admin Status Badge -->
         <div id="admin-status-badge" class="hidden bg-amber-500/15 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 text-[11px] px-3 py-1.5 rounded-2xl font-bold inline-flex items-center gap-1.5 border border-amber-300/40 dark:border-amber-700/50 shadow-sm backdrop-blur-md">
           👑 Admin Active
         </div>
@@ -73,7 +68,6 @@
     <div id="scanner-container" class="space-y-3.5">
       <div id="reader" class="rounded-2xl overflow-hidden border-3 border-emerald-500/80 dark:border-emerald-600/80 shadow-lg bg-black min-h-[220px]"></div>
       
-      <!-- ปุ่มเปิด-ปิดกล้อง -->
       <div class="flex gap-2">
         <button id="btn-toggle-cam" onclick="toggleCameraState()" class="w-full py-3.5 bg-red-500 hover:bg-red-600 text-white font-bold text-xs rounded-2xl shadow-md transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]">
           🛑 ปิดกล้องสแกน
@@ -86,7 +80,6 @@
     <!-- Display Plant Detail Card -->
     <div id="result-card" class="hidden space-y-3.5 max-h-[70svh] overflow-y-auto pr-1 custom-scrollbar">
       
-      <!-- Back to Admin Database Button (Visible for Admin) -->
       <div id="admin-back-btn-container" class="hidden">
         <button onclick="openAdminDatabaseModal()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-md transition-all duration-200 cursor-pointer text-xs flex items-center justify-center gap-2 active:scale-[0.98]">
           ⬅️ กลับไปยังหน้าจัดการข้อมูลพรรณไม้
@@ -194,7 +187,6 @@
           <textarea id="edit-properties-info" rows="2" class="w-full p-3 border rounded-xl bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-amber-500 shadow-sm text-sm"></textarea>
         </div>
 
-        <!-- แนบไฟล์รูปภาพ -->
         <div class="p-3 bg-white/90 dark:bg-slate-800 rounded-xl border border-amber-200 dark:border-slate-700 space-y-2 shadow-sm">
           <label class="block font-bold text-emerald-800 dark:text-emerald-400">🖼️ แนบไฟล์รูปภาพพรรณไม้</label>
           <input type="file" id="edit-image-file" accept="image/*" class="w-full text-xs text-slate-600 file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-100 file:text-emerald-800 hover:file:bg-emerald-200 cursor-pointer" onchange="previewSelectedImage(this)">
@@ -225,7 +217,6 @@
         <button onclick="closeSettings()" class="text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 text-lg font-bold cursor-pointer w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 transition">&times;</button>
       </div>
 
-      <!-- Wallpaper Customizer -->
       <div class="space-y-1.5">
         <label class="block text-[11px] font-bold text-gray-400 dark:text-slate-400 uppercase tracking-wider">🌿 วอลเปเปอร์ธรรมชาติ / Nature Wallpaper</label>
         <button onclick="randomizeWallpaper()" class="w-full py-3 px-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-xs font-bold border border-emerald-200 dark:border-emerald-800/60 transition flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-[0.98]">
@@ -318,7 +309,6 @@
         </div>
       </div>
 
-      <!-- Search & Add New Plant Button Bar -->
       <div class="flex gap-2">
         <input type="text" id="db-search-input" oninput="filterAdminDatabase()" placeholder="🔎 พิมพ์รหัส, ชื่อต้นไม้, หรือสรรพคุณ..." class="flex-1 p-3 text-sm border rounded-xl bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm">
         <button onclick="openAddNewTreeForm()" class="px-3.5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shrink-0 flex items-center gap-1 shadow-md transition cursor-pointer">
@@ -392,296 +382,339 @@
       password: "123456"
     };
 
+    // ฐานข้อมูลพรรณไม้มาตรฐาน (ปรับคีย์ให้ตรงกันทั้งหมดเรียบร้อยแล้ว)
     const initialPlantData = [
-  {
-    "no": "1",
-    "tree_id": "plant-1-0001",
-    "name": "ประดู่",
-    "local_name": "ประดู่",
-    "scientific_name": "Pterocarpus indicus Willd. (FABACEAE)",
-    "trunk": "ไม้ยืนต้นขนาดใหญ่ สูง 15-30 เมตร เปลือกต้นสีน้ำตาลดำ แตกเป็นร่องลึกตามยาว",
-    "leaf": "ใบประกอบแบบขนนกปลายเดียว เรียงสลับ ใบย่อยรูปไข่หรือรูปรี ปลายแหลม โคนมน",
-    "property": "แก่นไม้ใช้ต้มแก้ไข้ ยอดอ่อนทานเป็นผักสด เนื้อไม้แข็งแรงใช้ทำเครื่องเรือน"
-  },
-  {
-    "no": "2",
-    "tree_id": "plant-1-0002",
-    "name": "นมน้อย",
-    "local_name": "ต้นหมากน้ำเต้า",
-    "scientific_name": "Polyalthia evecta (Pierre) Finet & Gagnep. (Annonaceae)",
-    "ไม้": "ไม้พุ่มขนาดเล็ก สูง 0.5-1 เมตร ลำต้นตั้งตรง เปลือกเรียบสีน้ำตาลเทา"
-  },
-  {
-    "no": "3",
-    "tree_id": "plant-1-0003",
-    "name": "มะกอกเลื่อม",
-    "local_name": "ต้นหมากกอกเลื่อม",
-    "scientific_name": "Canarium subulatum Guillaumin. (BURSERACEAE)",
-    "trunk": "ไม้ยืนต้นขนาดกลางถึงใหญ่ สูง 10-25 เมตร เปลือกต้นสีเทาเรียบหรือร่อนเป็นแผ่น",
-    "leaf": "ใบประกอบแบบขนนกปลายเดี่ยว ขอบใบหยักฟันเลื่อย แผ่นใบหนาเป็นมัน",
-    "property": "ผลสุกรสเปรี้ยวหวานทานได้ เปลือกต้นต้มดื่มแก้ท้องร่วงและใช้ชะล้างบาดแผล"
-  },
-  {
-    "no": "4",
-    "tree_id": "plant-1-0004",
-    "name": "นมควาย",
-    "local_name": "หมากผีผ่วน",
-    "scientific_name": "Uvaria rufa Blume. (ANNONACEAE)",
-    "trunk": "ไม้เลื้อยเนื้อแข็งหรือไม้พุ่มกึ่งเลื้อย กิ่งก้านมีขนสีน้ำตาลแดงหนาแน่น",
-    "leaf": "ใบเดี่ยว เรียงสลับ รูปขอบขนานหรือรูปรี ผิวใบมีขนสั้นนุ่มทั้งสองด้าน",
-    "property": "ผลสุกรสหวานเปรี้ยว แก่นและรากต้มน้ำดื่มแก้ปวดเมื่อย แก้ไข้ และแก้ท้องเสีย"
-  },
-  {
-    "no": "5",
-    "tree_id": "plant-1-0005",
-    "name": "ยอป่า",
-    "local_name": "ต้นยอป่า",
-    "scientific_name": "Morinda coreia Buch.-Ham. (RUBIACEAE)",
-    "trunk": "ไม้ยืนต้นขนาดเล็กถึงกลาง สูง 5-15 เมตร เปลือกสีน้ำตาลเทา แตกเป็นร่องลึก",
-    "leaf": "ใบเดี่ยว ออกตรงข้าม รูปรีหรือรูปขอบขนาน แผ่นใบหนา ผิวใบด้านบนสาก",
-    "property": "แก่นต้มน้ำดื่มแก้อาเจียนและขับลม บำรุงธาตุ ผลแก่อมแก้เจ็บคอ"
-  },
-  {
-    "no": "6",
-    "tree_id": "plant-1-0006",
-    "name": "ต้นขี้มอด",
-    "local_name": "ส้มขี้มอด",
-    "scientific_name": "Dalbergia lanceolaria L.f. var. lakhonensis (LEGUMINOSAE)",
-    "trunk": "ไม้ยืนต้นขนาดกลางถึงใหญ่ สูง 15-25 เมตร เปลือกสีเทาลายเรียบหรือหลุดล่อน",
-    "leaf": "ใบประกอบแบบขนนกปลายเดี่ยว ใบย่อยรูปไข่หรือรูปรี เนื้อใบบาง",
-    "property": "เปลือกต้นใช้สมานแผลและแก้ไข้ แก่นใช้บำรุงโลหิตและขับลมในลำไส้"
-  },
-  {
-    "no": "7",
-    "tree_id": "plant-1-0007",
-    "name": "ต้นตะขบป่า",
-    "local_name": "หมากเบน",
-    "scientific_name": "Flacourtia indica (Burm.f.) Merr. (FLACOURTIACEAE)",
-    "trunk": "ไม้พุ่มหรือไม้ยืนต้นขนาดเล็ก สูง 2-10 เมตร มีหนามแหลมแข็งตามลำต้น",
-    "leaf": "ใบเดี่ยว เรียงสลับ รูปไข่หรือรูปรี ขอบใบจักฟันเลื่อย แผ่นใบเรียบหนา",
-    "property": "ผลสุกรับประทานได้ รสหวานเปรี้ยว เปลือกต้นต้มแก้ท้องเสียและท้องร่วง"
-  },
-  {
-    "no": "8",
-    "tree_id": "plant-1-0008",
-    "name": "ติ้วขน",
-    "local_name": "ต้นติ้ว",
-    "scientific_name": "Cratoxylum formosum (Jacq.) Benth. (HYPERICACEAE)",
-    "trunk": "ไม้ยืนต้นขนาดเล็กถึงกลาง สูง 8-15 เมตร เปลือกสีน้ำตาลแตกเป็นร่อง ยอดมีขน",
-    "leaf": "ใบเดี่ยว ออกตรงข้าม รูปรีหรือรูปรีขอบขนาน หลังใบและท้องใบมีขนนุ่ม",
-    "property": "ยอดอ่อนและใบอ่อนรับประทานเป็นผักสด รสเปรี้ยว ดอกและรากใช้ต้มแก้ไข้"
-  },
-  {
-    "no": "9",
-    "tree_id": "plant-1-0009",
-    "name": "ต้นโมกป่า",
-    "local_name": "ต้นเชือก",
-    "scientific_name": "Wrightia dubia (Sims) Spreng. (APOCYNACEAE)",
-    "trunk": "ไม้พุ่มหรือไม้ยืนต้นขนาดเล็ก สูง 2-6 เมตร มียางสีขาว เปลือกสีน้ำตาลอ่อน",
-    "leaf": "ใบเดี่ยว ออกตรงข้ามหรือรูปรี ปลายแหลม ผิวใบเรียบ",
-    "property": "รากดื่มน้ำดื่มแก้พิษสัตว์กัดต่อย ดอกช่วยบำรุงธาตุและขับลม เปลือกต้นใช้สมานแผล แก้ท้องร่วง กิ่งและเปลือกใช้ย้อมผ้าสีน้ำตาล"
-  },
-  {
-    "no": "10",
-    "tree_id": "plant-1-0010",
-    "name": "รกฟ้า",
-    "local_name": "รกฟ้า",
-    "scientific_name": "Terminalia alata Heyne ex Roth. (COMBRETACEAE)",
-    "trunk": "ไม้ยืนต้นขนาดใหญ่ สูง 20-30 เมตร เปลือกสีดำแตกเป็นร่องลึกคล้ายก้อนเกล็ด",
-    "leaf": "ใบเดี่ยว ออกตรงข้าม รูปขอบขนานหรือรูปรี แผ่นใบหนาคล้ายหนัง",
-    "property": "เปลือกต้นใช้สมานแผล แก้ท้องร่วง"
-  },
-  {
-    "no": "11",
-    "tree_id": "plant-1-0011",
-    "name": "คิ้วเกลี้ยง",
-    "local_name": "คิ้วหม่น / คิ้วหนาม",
-    "scientific_name": "Cratoxylum cochinchinense (Lour.) Blume (Hypericaceae)",
-    "trunk": "ไม้ยืนต้นขนาดเล็กถึงกลาง สูง 10-18 เมตร เปลือกสีน้ำตาลแดง เรียบหรือร่อน",
-    "leaf": "ใบเดี่ยว ออกตรงข้าม รูปรีหรือรูปหอก ผิวใบเรียบเกลี้ยง ไม่มีขน ยอดสีแดง",
-    "property": "ยอดอ่อนทานเป็นผักสดเครื่องเคียง เปลือกและรากใช้แก้ท้องร่วงและสมานแผล"
-  },
-  {
-    "no": "12",
-    "tree_id": "plant-1-0013",
-    "name": "พลวง",
-    "local_name": "กุง",
-    "scientific_name": "Dipterocarpus tuberculatus Roxb. (Dipterocarpaceae)",
-    "trunk": "ไม้ยืนต้นขนาดใหญ่ สูง 15-30 เมตร เปลือกสีน้ำตาลหนา แตกเป็นร่องลึกตามยาว",
-    "leaf": "ใบเดี่ยว เรียงสลับ รูปไข่กว้างขนาดใหญ่ โคนรูปหัวใจ แผ่นใบหนาแข็ง",
-    "property": "ชันไม้ใช้ทากันน้ำรั่วซึม ใบใช้ห่อของหรือมุงหลังคา เปลือกใช้สมานแผล"
-  },
-  {
-    "no": "13",
-    "tree_id": "plant-1-0014",
-    "name": "พลองเหมือด",
-    "local_name": "เหมือดลด",
-    "scientific_name": "Memecylon edule Roxb. (MELASTOMATACEAE)",
-    "trunk": "ไม้พุ่มหรือไม้ยืนต้นขนาดเล็ก สูง 3-8 เมตร เปลือกสีน้ำตาลเทาร่อนเป็นแผ่น",
-    "leaf": "ใบเดี่ยว ออกตรงข้าม รูปรีหรือรูปขอบขนาน แผ่นใบหนาเรียบแข็งเป็นมัน",
-    "property": "ใบและรากใช้ต้มต้านการอักเสบ แก้ไข้ บำรุงเลือด ผลสุกรับประทานได้"
-  },
-  {
-    "no": "14",
-    "tree_id": "plant-1-0015",
-    "name": "ข่อย",
-    "local_name": "ต้นข่อย",
-    "scientific_name": "Streblus asper Lour. (MORACEAE)",
-    "trunk": "ไม้ยืนต้นขนาดเล็กถึงกลาง สูง 5-15 เมตร เปลือกสีเทาขรุขระ มียางสีขาว",
-    "leaf": "ใบเดี่ยว เรียงสลับ รูปไข่กลับ สากมือทั้งสองด้าน ขอบใบจักฟันเลื่อย",
-    "property": "กิ่งใช้ถูฟันแก้ปวดฟัน เปลือกใช้รักษาโรคผิวหนังและแก้ท้องร่วง"
-  },
-  {
-    "no": "15",
-    "tree_id": "plant-1-0016",
-    "name": "ตูมกา",
-    "local_name": "ตูมกาขาว",
-    "scientific_name": "Strychnos nux-blanda A.W.Hill (Strychnaceae)",
-    "trunk": "ไม้ยืนต้นขนาดกลาง สูง 8-15 เมตร เปลือกสีน้ำตาลเทา เรียบหรือแตกเป็นสเกล",
-    "leaf": "ใบเดี่ยว ออกตรงข้าม รูปไข่กว้าง ปลายแหลม มีเส้นใบ 3-5 เส้นออกจากโคน",
-    "property": "ตำรับยาพื้นบ้านใช้ผลและรากแก้พิษปวดเมื่อย (ใช้ด้วยความระมัดระวัง)"
-  },
-  {
-    "no": "16",
-    "tree_id": "plant-1-0017",
-    "name": "ตะโก",
-    "local_name": "ต้นโก / ตะโกนา",
-    "scientific_name": "Diospyros rhodocalyx Kurz (EBENACEAE)",
-    "trunk": "ไม้ยืนต้นขนาดกลาง สูง 8-15 เมตร เปลือกสีดำหนา แตกเป็นร่องลึกขรุขระ",
-    "leaf": "ใบเดี่ยว เรียงสลับ รูปไข่กลับหรือรูปรี แผ่นใบหนาเรียบแข็ง สีเขียวเข้ม",
-    "property": "เปลือกต้นและผลดิบใช้สมานแผล แก้ท้องเสีย และต้มดื่มบำรุงกำลัง"
-  },
-  {
-    "no": "17",
-    "tree_id": "plant-1-0018",
-    "name": "กวาวเครือแดง",
-    "local_name": "จานเครือ",
-    "scientific_name": "Butea superba Roxb. (Leguminosae)",
-    "trunk": "ไม้เถาเลื้อยขนาดใหญ่ พันต้นไม้อื่น ลำต้นมียางสีแดง",
-    "leaf": "ใบประกอบมีใบย่อย 3 ใบ รูปไข่กว้างหรือรูปขนมเปียกปูน แผ่นใบใหญ่หนา",
-    "property": "หัวใต้ดินใช้บำรุงร่างกาย บำรุงกำลัง และเพิ่มการไหลเวียนโลหิต"
-  },
-  {
-    "no": "18",
-    "tree_id": "plant-1-0019",
-    "name": "กระโดน",
-    "local_name": "กระโดนบก",
-    "scientific_name": "Careya sphaerica Roxb. (Lecythidaceae)",
-    "trunk": "ไม้ยืนต้นขนาดกลาง สูง 10-20 เมตร เปลือกสีน้ำตาลดำ แตกเป็นปุ่มขรุขระ",
-    "leaf": "ใบเดี่ยว เรียงสลับ รูปไข่กลับขนาดใหญ่ ปลายใบมน ขอบใบหยัก",
-    "property": "ดอกและยอดอ่อนใช้รับประทานเป็นผักสด รสฝาดมัน เปลือกใช้สมานแผล"
-  },
-  {
-    "no": "19",
-    "tree_id": "plant-1-0020",
-    "name": "อุโลก",
-    "local_name": "ต้นส้มกบ",
-    "scientific_name": "Hymenodictyon orixense (Roxb.) Mabb. (Rubiaceae)",
-    "trunk": "ไม้ยืนต้นขนาดใหญ่ สูง 15-25 เมตร เปลือกสีน้ำตาลเทา แตกเป็นร่องตามยาว",
-    "leaf": "ใบเดี่ยว ออกตรงข้าม รูปไข่กว้าง มีใบประดับสีขาวหรือครีมโดดเด่น",
-    "property": "เปลือกต้นรสขม ต้มแก้ไข้ แก้เจ็บคอ และช่วยบำรุงธาตุ"
-  },
-  {
-    "no": "20",
-    "tree_id": "plant-1-0021",
-    "name": "พลับพลา",
-    "local_name": "หมากคอม",
-    "scientific_name": "Microcos tomentosa Smith (TILIACEAE)",
-    "trunk": "ไม้ยืนต้นขนาดกลาง สูง 8-15 เมตร กิ่งก้านมีขนสีน้ำตาลหนาแน่น",
-    "leaf": "ใบเดี่ยว เรียงสลับ รูปไข่กว้าง ท้องใบมีขนสีดาวนุ่มนวล",
-    "property": "ผลสุกรับประทานได้รสหวาน เปลือกและใบใช้ต้มแก้ไอและขับเสมหะ"
-  },
-  {
-    "no": "21",
-    "tree_id": "plant-1-0022",
-    "name": "รัง",
-    "local_name": "ต้นรัง",
-    "scientific_name": "Shorea siamensis Miq. (Dipterocarpaceae)",
-    "trunk": "ไม้ยืนต้นขนาดกลางถึงใหญ่ สูง 15-25 เมตร เปลือกสีน้ำตาลเทา แตกเป็นร่องลึก",
-    "leaf": "ใบเดี่ยว เรียงสลับ รูปไข่กว้าง โคนใบรูปหัวใจ แผ่นใบเรียบหนาแข็ง",
-    "property": "ชันไม้ใช้ทากันน้ำ ย้อมอวน ก่อสร้างบ้านเรือน และใช้สมานแผลแก้ท้องร่วง"
-  },
-  {
-    "no": "22",
-    "tree_id": "plant-1-0023",
-    "name": "มะเกลือ",
-    "local_name": "หมากเกลือ",
-    "scientific_name": "Diospyros mollis Griff. (Ebenaceae)",
-    "trunk": "ไม้ยืนต้นขนาดกลางถึงใหญ่ สูง 10-20 เมตร เปลือกสีดำแตกเป็นร่องสะเก็ด",
-    "leaf": "ใบเดี่ยว เรียงสลับ รูปไข่หรือรูปรี ปลายแหลม ใบบางเรียบ สีเขียวเข้ม",
-    "property": "ผลแก่สดใช้เป็นยาขับพยาธิ ย้อมผ้าและไหมให้ได้สีดำสนิท"
-  },
-  {
-    "no": "23",
-    "tree_id": "plant-1-0024",
-    "name": "กระพี้โพรง",
-    "local_name": "ต้นฉนวน",
-    "scientific_name": "Dalbergia nigrescens Kurz (Fabaceae)",
-    "trunk": "ไม้ยืนต้นขนาดกลาง สูง 10-18 เมตร เปลือกสีเทาเข้ม ร่อนเป็นแผ่นบาง",
-    "leaf": "ใบประกอบแบบขนนกปลายเดี่ยว ใบย่อยรูปไข่หรือรูปรี ผิวใบเรียบ",
-    "property": "เนื้อไม้ใช้ทำเครื่องเรือน ด้ามเครื่องมือ เปลือกและแก่นใช้บำรุงโลหิต"
-  },
-  {
-    "no": "24",
-    "tree_id": "plant-1-0025",
-    "name": "ส้มเสี้ยว",
-    "local_name": "ส้มเสี้ยว",
-    "scientific_name": "Bauhinia malabarica Roxb. (LEGUMINOSAE)",
-    "trunk": "ไม้ยืนต้นขนาดเล็กถึงกลาง สูง 8-15 เมตร เปลือกสีน้ำตาลเทา ร่อนเป็นแผ่น",
-    "leaf": "ใบเดี่ยว แฝดคู่ (เว้าลึกตรงปลายคล้ายกับเท้าสัตว์) แผ่นใบกว้าง",
-    "property": "ใบมีรสเปรี้ยว ใช้ปรุงอาหารต้มส้ม แก้ไอ ขับเสมหะ และฟอกโลหิต"
-  },
-  {
-    "no": "25",
-    "tree_id": "plant-1-0026",
-    "name": "ตะคร้อ",
-    "local_name": "หนามคอ้ง",
-    "scientific_name": "Ziziphus cambodiana Pierre (RHAMNACEAE)",
-    "trunk": "ไม้พุ่มกึ่งเลื้อย มีหนามแหลมงอตามกิ่งก้าน",
-    "leaf": "ใบเดี่ยว เรียงสลับ รูปไข่กว้างหรือรูปวงกลม มีเส้นใบออกจากโคน 3 เส้น",
-    "property": "ผลสุกรสเปรี้ยวหวาน ทานได้ เปลือกและรากต้มแก้ท้องเสีย สมานแผล"
-  },
-  {
-    "no": "26",
-    "tree_id": "plant-1-0027",
-    "name": "เปราะป่า",
-    "local_name": "ดูบหมูบ",
-    "scientific_name": "Kaempferia marginata Carey (Zingiberaceae)",
-    "trunk": "ไม้ล้มลุกมีหัวใต้ดิน ทรงพุ่มแนบติดพื้นดิน",
-    "leaf": "ใบเดี่ยว 2-3 ใบ กางแผ่แนบติดพื้นดิน รูปวงกลม ขอบใบสีแดง",
-    "property": "หัวและเหง้าใช้แก้ท้องอืด ท้องเฟ้อ ขับลม แก้ปวดศีรษะ"
-  },
-  {
-    "no": "27",
-    "tree_id": "plant-1-0028",
-    "name": "ตะคร้อ",
-    "local_name": "หมากคือ",
-    "scientific_name": "Schleichera oleosa (Lour.) Merr. (SAPINDACEAE)",
-    "trunk": "ไม้ยืนต้นขนาดใหญ่ สูง 15-25 เมตร เปลือกสีน้ำตาลเทา ร่อนเป็นแผ่น",
-    "leaf": "ใบประกอบแบบขนนก ใบย่อยรูปรีหรือรูปขอบขนาน เนื้อใบหนาเป็นมัน",
-    "property": "ผลสุกทานได้รสเปรี้ยวจัด น้ำมันจากเมล็ดใช้บำรุงเส้นผมและผิวหนัง"
-  },
-  {
-    "no": "28",
-    "tree_id": "plant-1-0029",
-    "name": "โมกเครือ",
-    "local_name": "ไส้ตัน",
-    "scientific_name": "Aganosma marginata (Roxb.) G.Don (Apocynaceae)",
-    "trunk": "ไม้เลื้อยเนื้อแข็งขนาดใหญ่ มียางสีขาว เปลือกสีน้ำตาลเข้ม",
-    "leaf": "ใบเดี่ยว ออกตรงข้าม รูปรีหรือรูปขอบขนาน แผ่นใบเรียบหนา",
-    "property": "เถาและรากใช้ต้มขับปัสสาวะ แก้โรคไต แก้อาการปวดเมื่อย"
-  },
-  {
-    "no": "29",
-    "tree_id": "plant-1-0030",
-    "name": "เต็ง",
-    "local_name": "ต้นจิก",
-    "scientific_name": "Shorea obtusa Wall. ex A.DC. (Dipterocarpaceae)",
-    "trunk": "ไม้ยืนต้นขนาดกลางถึงใหญ่ สูง 10-25 เมตร เปลือกสีน้ำตาลเข้ม แตกเป็นร่องลึก",
-    "leaf": "ใบเดี่ยว เรียงสลับ รูปขอบขนานหรือรูปไข่กลับ ปลายมน โคนมน",
-    "property": "เนื้อไม้แข็งแรงทนทานใช้สร้างบ้าน ทำเสา ชันไม้ใช้สมานแผลและห้ามเลือด"
-  }
-];
+      {
+        "no": "1",
+        "tree_id": "plant-1-0001",
+        "plant_name": "ประดู่",
+        "local_name": "ประดู่",
+        "scientific_name": "Pterocarpus indicus Willd. (FABACEAE)",
+        "family_name": "FABACEAE",
+        "stem_info": "ไม้ยืนต้นขนาดใหญ่ สูง 15-30 เมตร เปลือกต้นสีน้ำตาลดำ แตกเป็นร่องลึกตามยาว",
+        "leaf_info": "ใบประกอบแบบขนนกปลายเดียว เรียงสลับ ใบย่อยรูปไข่หรือรูปรี ปลายแหลม โคนมน",
+        "properties_info": "แก่นไม้ใช้ต้มแก้ไข้ ยอดอ่อนทานเป็นผักสด เนื้อไม้แข็งแรงใช้ทำเครื่องเรือน"
+      },
+      {
+        "no": "2",
+        "tree_id": "plant-1-0002",
+        "plant_name": "นมน้อย",
+        "local_name": "ต้นหมากน้ำเต้า",
+        "scientific_name": "Polyalthia evecta (Pierre) Finet & Gagnep. (Annonaceae)",
+        "family_name": "Annonaceae",
+        "stem_info": "ไม้พุ่มขนาดเล็ก สูง 0.5-1 เมตร ลำต้นตั้งตรง เปลือกเรียบสีน้ำตาลเทา",
+        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปรีหรือรูปขอบขนาน ผิวใบเรียบ",
+        "properties_info": "รากต้มดื่มแก้พิษ แก้ไข้ และขับลม"
+      },
+      {
+        "no": "3",
+        "tree_id": "plant-1-0003",
+        "plant_name": "มะกอกเลื่อม",
+        "local_name": "ต้นหมากกอกเลื่อม",
+        "scientific_name": "Canarium subulatum Guillaumin. (BURSERACEAE)",
+        "family_name": "BURSERACEAE",
+        "stem_info": "ไม้ยืนต้นขนาดกลางถึงใหญ่ สูง 10-25 เมตร เปลือกต้นสีเทาเรียบหรือร่อนเป็นแผ่น",
+        "leaf_info": "ใบประกอบแบบขนนกปลายเดี่ยว ขอบใบหยักฟันเลื่อย แผ่นใบหนาเป็นมัน",
+        "properties_info": "ผลสุกรสเปรี้ยวหวานทานได้ เปลือกต้นต้มดื่มแก้ท้องร่วงและใช้ชะล้างบาดแผล"
+      },
+      {
+        "no": "4",
+        "tree_id": "plant-1-0004",
+        "plant_name": "นมควาย",
+        "local_name": "หมากผีผ่วน",
+        "scientific_name": "Uvaria rufa Blume. (ANNONACEAE)",
+        "family_name": "ANNONACEAE",
+        "stem_info": "ไม้เลื้อยเนื้อแข็งหรือไม้พุ่มกึ่งเลื้อย กิ่งก้านมีขนสีน้ำตาลแดงหนาแน่น",
+        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปขอบขนานหรือรูปรี ผิวใบมีขนสั้นนุ่มทั้งสองด้าน",
+        "properties_info": "ผลสุกรสหวานเปรี้ยว แก่นและรากต้มน้ำดื่มแก้ปวดเมื่อย แก้ไข้ และแก้ท้องเสีย"
+      },
+      {
+        "no": "5",
+        "tree_id": "plant-1-0005",
+        "plant_name": "ยอป่า",
+        "local_name": "ต้นยอป่า",
+        "scientific_name": "Morinda coreia Buch.-Ham. (RUBIACEAE)",
+        "family_name": "RUBIACEAE",
+        "stem_info": "ไม้ยืนต้นขนาดเล็กถึงกลาง สูง 5-15 เมตร เปลือกสีน้ำตาลเทา แตกเป็นร่องลึก",
+        "leaf_info": "ใบเดี่ยว ออกตรงข้าม รูปรีหรือรูปขอบขนาน แผ่นใบหนา ผิวใบด้านบนสาก",
+        "properties_info": "แก่นต้มน้ำดื่มแก้อาเจียนและขับลม บำรุงธาตุ ผลแก่อมแก้เจ็บคอ"
+      },
+      {
+        "no": "6",
+        "tree_id": "plant-1-0006",
+        "plant_name": "ต้นขี้มอด",
+        "local_name": "ส้มขี้มอด",
+        "scientific_name": "Dalbergia lanceolaria L.f. var. lakhonensis (LEGUMINOSAE)",
+        "family_name": "LEGUMINOSAE",
+        "stem_info": "ไม้ยืนต้นขนาดกลางถึงใหญ่ สูง 15-25 เมตร เปลือกสีเทาลายเรียบหรือหลุดล่อน",
+        "leaf_info": "ใบประกอบแบบขนนกปลายเดี่ยว ใบย่อยรูปไข่หรือรูปรี เนื้อใบบาง",
+        "properties_info": "เปลือกต้นใช้สมานแผลและแก้ไข้ แก่นใช้บำรุงโลหิตและขับลมในลำไส้"
+      },
+      {
+        "no": "7",
+        "tree_id": "plant-1-0007",
+        "plant_name": "ต้นตะขบป่า",
+        "local_name": "หมากเบน",
+        "scientific_name": "Flacourtia indica (Burm.f.) Merr. (FLACOURTIACEAE)",
+        "family_name": "FLACOURTIACEAE",
+        "stem_info": "ไม้พุ่มหรือไม้ยืนต้นขนาดเล็ก สูง 2-10 เมตร มีหนามแหลมแข็งตามลำต้น",
+        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปไข่หรือรูปรี ขอบใบจักฟันเลื่อย แผ่นใบเรียบหนา",
+        "properties_info": "ผลสุกรับประทานได้ รสหวานเปรี้ยว เปลือกต้นต้มแก้ท้องเสียและท้องร่วง"
+      },
+      {
+        "no": "8",
+        "tree_id": "plant-1-0008",
+        "plant_name": "ติ้วขน",
+        "local_name": "ต้นติ้ว",
+        "scientific_name": "Cratoxylum formosum (Jacq.) Benth. (HYPERICACEAE)",
+        "family_name": "HYPERICACEAE",
+        "stem_info": "ไม้ยืนต้นขนาดเล็กถึงกลาง สูง 8-15 เมตร เปลือกสีน้ำตาลแตกเป็นร่อง ยอดมีขน",
+        "leaf_info": "ใบเดี่ยว ออกตรงข้าม รูปรีหรือรูปรีขอบขนาน หลังใบและท้องใบมีขนนุ่ม",
+        "properties_info": "ยอดอ่อนและใบอ่อนรับประทานเป็นผักสด รสเปรี้ยว ดอกและรากใช้ต้มแก้ไข้"
+      },
+      {
+        "no": "9",
+        "tree_id": "plant-1-0009",
+        "plant_name": "ต้นโมกป่า",
+        "local_name": "ต้นเชือก",
+        "scientific_name": "Wrightia dubia (Sims) Spreng. (APOCYNACEAE)",
+        "family_name": "APOCYNACEAE",
+        "stem_info": "ไม้พุ่มหรือไม้ยืนต้นขนาดเล็ก สูง 2-6 เมตร มียางสีขาว เปลือกสีน้ำตาลอ่อน",
+        "leaf_info": "ใบเดี่ยว ออกตรงข้ามหรือรูปรี ปลายแหลม ผิวใบเรียบ",
+        "properties_info": "รากดื่มน้ำดื่มแก้พิษสัตว์กัดต่อย ดอกช่วยบำรุงธาตุและขับลม เปลือกต้นใช้สมานแผล แก้ท้องร่วง"
+      },
+      {
+        "no": "10",
+        "tree_id": "plant-1-0010",
+        "plant_name": "รกฟ้า",
+        "local_name": "รกฟ้า",
+        "scientific_name": "Terminalia alata Heyne ex Roth. (COMBRETACEAE)",
+        "family_name": "COMBRETACEAE",
+        "stem_info": "ไม้ยืนต้นขนาดใหญ่ สูง 20-30 เมตร เปลือกสีดำแตกเป็นร่องลึกคล้ายก้อนเกล็ด",
+        "leaf_info": "ใบเดี่ยว ออกตรงข้าม รูปขอบขนานหรือรูปรี แผ่นใบหนาคล้ายหนัง",
+        "properties_info": "เปลือกต้นใช้สมานแผล แก้ท้องร่วง"
+      },
+      {
+        "no": "11",
+        "tree_id": "plant-1-0011",
+        "plant_name": "คิ้วเกลี้ยง",
+        "local_name": "คิ้วหม่น / คิ้วหนาม",
+        "scientific_name": "Cratoxylum cochinchinense (Lour.) Blume (Hypericaceae)",
+        "family_name": "Hypericaceae",
+        "stem_info": "ไม้ยืนต้นขนาดเล็กถึงกลาง สูง 10-18 เมตร เปลือกสีน้ำตาลแดง เรียบหรือร่อน",
+        "leaf_info": "ใบเดี่ยว ออกตรงข้าม รูปรีหรือรูปหอก ผิวใบเรียบเกลี้ยง ไม่มีขน ยอดสีแดง",
+        "properties_info": "ยอดอ่อนทานเป็นผักสดเครื่องเคียง เปลือกและรากใช้แก้ท้องร่วงและสมานแผล"
+      },
+      {
+        "no": "12",
+        "tree_id": "plant-1-0013",
+        "plant_name": "พลวง",
+        "local_name": "กุง",
+        "scientific_name": "Dipterocarpus tuberculatus Roxb. (Dipterocarpaceae)",
+        "family_name": "Dipterocarpaceae",
+        "stem_info": "ไม้ยืนต้นขนาดใหญ่ สูง 15-30 เมตร เปลือกสีน้ำตาลหนา แตกเป็นร่องลึกตามยาว",
+        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปไข่กว้างขนาดใหญ่ โคนรูปหัวใจ แผ่นใบหนาแข็ง",
+        "properties_info": "ชันไม้ใช้ทากันน้ำรั่วซึม ใบใช้ห่อของหรือมุงหลังคา เปลือกใช้สมานแผล"
+      },
+      {
+        "no": "13",
+        "tree_id": "plant-1-0014",
+        "plant_name": "พลองเหมือด",
+        "local_name": "เหมือดลด",
+        "scientific_name": "Memecylon edule Roxb. (MELASTOMATACEAE)",
+        "family_name": "MELASTOMATACEAE",
+        "stem_info": "ไม้พุ่มหรือไม้ยืนต้นขนาดเล็ก สูง 3-8 เมตร เปลือกสีน้ำตาลเทาร่อนเป็นแผ่น",
+        "leaf_info": "ใบเดี่ยว ออกตรงข้าม รูปรีหรือรูปขอบขนาน แผ่นใบหนาเรียบแข็งเป็นมัน",
+        "properties_info": "ใบและรากใช้ต้มต้านการอักเสบ แก้ไข้ บำรุงเลือด ผลสุกรับประทานได้"
+      },
+      {
+        "no": "14",
+        "tree_id": "plant-1-0015",
+        "plant_name": "ข่อย",
+        "local_name": "ต้นข่อย",
+        "scientific_name": "Streblus asper Lour. (MORACEAE)",
+        "family_name": "MORACEAE",
+        "stem_info": "ไม้ยืนต้นขนาดเล็กถึงกลาง สูง 5-15 เมตร เปลือกสีเทาขรุขระ มียางสีขาว",
+        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปไข่กลับ สากมือทั้งสองด้าน ขอบใบจักฟันเลื่อย",
+        "properties_info": "กิ่งใช้ถูฟันแก้ปวดฟัน เปลือกใช้รักษาโรคผิวหนังและแก้ท้องร่วง"
+      },
+      {
+        "no": "15",
+        "tree_id": "plant-1-0016",
+        "plant_name": "ตูมกา",
+        "local_name": "ตูมกาขาว",
+        "scientific_name": "Strychnos nux-blanda A.W.Hill (Strychnaceae)",
+        "family_name": "Strychnaceae",
+        "stem_info": "ไม้ยืนต้นขนาดกลาง สูง 8-15 เมตร เปลือกสีน้ำตาลเทา เรียบหรือแตกเป็นสเกล",
+        "leaf_info": "ใบเดี่ยว ออกตรงข้าม รูปไข่กว้าง ปลายแหลม มีเส้นใบ 3-5 เส้นออกจากโคน",
+        "properties_info": "ตำรับยาพื้นบ้านใช้ผลและรากแก้พิษปวดเมื่อย"
+      },
+      {
+        "no": "16",
+        "tree_id": "plant-1-0017",
+        "plant_name": "ตะโก",
+        "local_name": "ต้นโก / ตะโกนา",
+        "scientific_name": "Diospyros rhodocalyx Kurz (EBENACEAE)",
+        "family_name": "EBENACEAE",
+        "stem_info": "ไม้ยืนต้นขนาดกลาง สูง 8-15 เมตร เปลือกสีดำหนา แตกเป็นร่องลึกขรุขระ",
+        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปไข่กลับหรือรูปรี แผ่นใบหนาเรียบแข็ง สีเขียวเข้ม",
+        "properties_info": "เปลือกต้นและผลดิบใช้สมานแผล แก้ท้องเสีย และต้มดื่มบำรุงกำลัง"
+      },
+      {
+        "no": "17",
+        "tree_id": "plant-1-0018",
+        "plant_name": "กวาวเครือแดง",
+        "local_name": "จานเครือ",
+        "scientific_name": "Butea superba Roxb. (Leguminosae)",
+        "family_name": "Leguminosae",
+        "stem_info": "ไม้เถาเลื้อยขนาดใหญ่ พันต้นไม้อื่น ลำต้นมียางสีแดง",
+        "leaf_info": "ใบประกอบมีใบย่อย 3 ใบ รูปไข่กว้างหรือรูปขนมเปียกปูน แผ่นใบใหญ่หนา",
+        "properties_info": "หัวใต้ดินใช้บำรุงร่างกาย บำรุงกำลัง และเพิ่มการไหลเวียนโลหิต"
+      },
+      {
+        "no": "18",
+        "tree_id": "plant-1-0019",
+        "plant_name": "กระโดน",
+        "local_name": "กระโดนบก",
+        "scientific_name": "Careya sphaerica Roxb. (Lecythidaceae)",
+        "family_name": "Lecythidaceae",
+        "stem_info": "ไม้ยืนต้นขนาดกลาง สูง 10-20 เมตร เปลือกสีน้ำตาลดำ แตกเป็นปุ่มขรุขระ",
+        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปไข่กลับขนาดใหญ่ ปลายใบมน ขอบใบหยัก",
+        "properties_info": "ดอกและยอดอ่อนใช้รับประทานเป็นผักสด รสฝาดมัน เปลือกใช้สมานแผล"
+      },
+      {
+        "no": "19",
+        "tree_id": "plant-1-0020",
+        "plant_name": "อุโลก",
+        "local_name": "ต้นส้มกบ",
+        "scientific_name": "Hymenodictyon orixense (Roxb.) Mabb. (Rubiaceae)",
+        "family_name": "Rubiaceae",
+        "stem_info": "ไม้ยืนต้นขนาดใหญ่ สูง 15-25 เมตร เปลือกสีน้ำตาลเทา แตกเป็นร่องตามยาว",
+        "leaf_info": "ใบเดี่ยว ออกตรงข้าม รูปไข่กว้าง มีใบประดับสีขาวหรือครีมโดดเด่น",
+        "properties_info": "เปลือกต้นรสขม ต้มแก้ไข้ แก้เจ็บคอ และช่วยบำรุงธาตุ"
+      },
+      {
+        "no": "20",
+        "tree_id": "plant-1-0021",
+        "plant_name": "พลับพลา",
+        "local_name": "หมากคอม",
+        "scientific_name": "Microcos tomentosa Smith (TILIACEAE)",
+        "family_name": "TILIACEAE",
+        "stem_info": "ไม้ยืนต้นขนาดกลาง สูง 8-15 เมตร กิ่งก้านมีขนสีน้ำตาลหนาแน่น",
+        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปไข่กว้าง ท้องใบมีขนสีดาวนุ่มนวล",
+        "properties_info": "ผลสุกรับประทานได้รสหวาน เปลือกและใบใช้ต้มแก้ไอและขับเสมหะ"
+      },
+      {
+        "no": "21",
+        "tree_id": "plant-1-0022",
+        "plant_name": "รัง",
+        "local_name": "ต้นรัง",
+        "scientific_name": "Shorea siamensis Miq. (Dipterocarpaceae)",
+        "family_name": "Dipterocarpaceae",
+        "stem_info": "ไม้ยืนต้นขนาดกลางถึงใหญ่ สูง 15-25 เมตร เปลือกสีน้ำตาลเทา แตกเป็นร่องลึก",
+        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปไข่กว้าง โคนใบรูปหัวใจ แผ่นใบเรียบหนาแข็ง",
+        "properties_info": "ชันไม้ใช้ทากันน้ำ ย้อมอวน ก่อสร้างบ้านเรือน และใช้สมานแผลแก้ท้องร่วง"
+      },
+      {
+        "no": "22",
+        "tree_id": "plant-1-0023",
+        "plant_name": "มะเกลือ",
+        "local_name": "หมากเกลือ",
+        "scientific_name": "Diospyros mollis Griff. (Ebenaceae)",
+        "family_name": "Ebenaceae",
+        "stem_info": "ไม้ยืนต้นขนาดกลางถึงใหญ่ สูง 10-20 เมตร เปลือกสีดำแตกเป็นร่องสะเก็ด",
+        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปไข่หรือรูปรี ปลายแหลม ใบบางเรียบ สีเขียวเข้ม",
+        "properties_info": "ผลแก่สดใช้เป็นยาขับพยาธิ ย้อมผ้าและไหมให้ได้สีดำสนิท"
+      },
+      {
+        "no": "23",
+        "tree_id": "plant-1-0024",
+        "plant_name": "กระพี้โพรง",
+        "local_name": "ต้นฉนวน",
+        "scientific_name": "Dalbergia nigrescens Kurz (Fabaceae)",
+        "family_name": "Fabaceae",
+        "stem_info": "ไม้ยืนต้นขนาดกลาง สูง 10-18 เมตร เปลือกสีเทาเข้ม ร่อนเป็นแผ่นบาง",
+        "leaf_info": "ใบประกอบแบบขนนกปลายเดี่ยว ใบย่อยรูปไข่หรือรูปรี ผิวใบเรียบ",
+        "properties_info": "เนื้อไม้ใช้ทำเครื่องเรือน ด้ามเครื่องมือ เปลือกและแก่นใช้บำรุงโลหิต"
+      },
+      {
+        "no": "24",
+        "tree_id": "plant-1-0025",
+        "plant_name": "ส้มเสี้ยว",
+        "local_name": "ส้มเสี้ยว",
+        "scientific_name": "Bauhinia malabarica Roxb. (LEGUMINOSAE)",
+        "family_name": "LEGUMINOSAE",
+        "stem_info": "ไม้ยืนต้นขนาดเล็กถึงกลาง สูง 8-15 เมตร เปลือกสีน้ำตาลเทา ร่อนเป็นแผ่น",
+        "leaf_info": "ใบเดี่ยว แฝดคู่ (เว้าลึกตรงปลายคล้ายกับเท้าสัตว์) แผ่นใบกว้าง",
+        "properties_info": "ใบมีรสเปรี้ยว ใช้ปรุงอาหารต้มส้ม แก้ไอ ขับเสมหะ และฟอกโลหิต"
+      },
+      {
+        "no": "25",
+        "tree_id": "plant-1-0026",
+        "plant_name": "ตะคร้อ",
+        "local_name": "หนามคอ้ง",
+        "scientific_name": "Ziziphus cambodiana Pierre (RHAMNACEAE)",
+        "family_name": "RHAMNACEAE",
+        "stem_info": "ไม้พุ่มกึ่งเลื้อย มีหนามแหลมงอตามกิ่งก้าน",
+        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปไข่กว้างหรือรูปวงกลม มีเส้นใบออกจากโคน 3 เส้น",
+        "properties_info": "ผลสุกรสเปรี้ยวหวาน ทานได้ เปลือกและรากต้มแก้ท้องเสีย สมานแผล"
+      },
+      {
+        "no": "26",
+        "tree_id": "plant-1-0027",
+        "plant_name": "เปราะป่า",
+        "local_name": "ดูบหมูบ",
+        "scientific_name": "Kaempferia marginata Carey (Zingiberaceae)",
+        "family_name": "Zingiberaceae",
+        "stem_info": "ไม้ล้มลุกมีหัวใต้ดิน ทรงพุ่มแนบติดพื้นดิน",
+        "leaf_info": "ใบเดี่ยว 2-3 ใบ กางแผ่แนบติดพื้นดิน รูปวงกลม ขอบใบสีแดง",
+        "properties_info": "หัวและเหง้าใช้แก้ท้องอืด ท้องเฟ้อ ขับลม แก้ปวดศีรษะ"
+      },
+      {
+        "no": "27",
+        "tree_id": "plant-1-0028",
+        "plant_name": "ตะคร้อ",
+        "local_name": "หมากคือ",
+        "scientific_name": "Schleichera oleosa (Lour.) Merr. (SAPINDACEAE)",
+        "family_name": "SAPINDACEAE",
+        "stem_info": "ไม้ยืนต้นขนาดใหญ่ สูง 15-25 เมตร เปลือกสีน้ำตาลเทา ร่อนเป็นแผ่น",
+        "leaf_info": "ใบประกอบแบบขนนก ใบย่อยรูปรีหรือรูปขอบขนาน เนื้อใบหนาเป็นมัน",
+        "properties_info": "ผลสุกทานได้รสเปรี้ยวจัด น้ำมันจากเมล็ดใช้บำรุงเส้นผมและผิวหนัง"
+      },
+      {
+        "no": "28",
+        "tree_id": "plant-1-0029",
+        "plant_name": "โมกเครือ",
+        "local_name": "ไส้ตัน",
+        "scientific_name": "Aganosma marginata (Roxb.) G.Don (Apocynaceae)",
+        "family_name": "Apocynaceae",
+        "stem_info": "ไม้เลื้อยเนื้อแข็งขนาดใหญ่ มียางสีขาว เปลือกสีน้ำตาลเข้ม",
+        "leaf_info": "ใบเดี่ยว ออกตรงข้าม รูปรีหรือรูปขอบขนาน แผ่นใบเรียบหนา",
+        "properties_info": "เถาและรากใช้ต้มขับปัสสาวะ แก้โรคไต แก้อาการปวดเมื่อย"
+      },
+      {
+        "no": "29",
+        "tree_id": "plant-1-0030",
+        "plant_name": "เต็ง",
+        "local_name": "ต้นจิก",
+        "scientific_name": "Shorea obtusa Wall. ex A.DC. (Dipterocarpaceae)",
+        "family_name": "Dipterocarpaceae",
+        "stem_info": "ไม้ยืนต้นขนาดกลางถึงใหญ่ สูง 10-25 เมตร เปลือกสีน้ำตาลเข้ม แตกเป็นร่องลึก",
+        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปขอบขนานหรือรูปไข่กลับ ปลายมน โคนมน",
+        "properties_info": "เนื้อไม้แข็งแรงทนทานใช้สร้างบ้าน ทำเสา ชันไม้ใช้สมานแผลและห้ามเลือด"
+      },
+      {
+        "no": "30",
+        "tree_id": "plant-1-0031",
+        "plant_name": "ราชพฤกษ์",
+        "local_name": "คูน / ราชพฤกษ์",
+        "scientific_name": "Cassia fistula L. (FABACEAE)",
+        "family_name": "FABACEAE",
+        "stem_info": "ไม้ยืนต้นขนาดกลาง สูง 10-20 เมตร เปลือกนอกสีเทาเรียบหรือแตกเป็นร่องตื้น",
+        "leaf_info": "ใบประกอบแบบขนนกปลายคู่ เรียงสลับ ใบย่อยรูปไข่หรือรูปรี ปลายมน",
+        "properties_info": "ดอกแก้ริดสีดวงทวาร ฝักแก้ท้องผูก เนื้อไม้แข็งใช้ทำเสาบ้านและเครื่องเรือน"
+      }
+    ];
 
     let html5QrCode = null;
     let isCameraActive = false;
@@ -694,7 +727,22 @@
     
     let storedLocalData = localStorage.getItem('skc_plant_data');
     let allTreesCache = storedLocalData ? JSON.parse(storedLocalData) : initialPlantData;
-    localStorage.setItem('skc_plant_data', JSON.stringify(allTreesCache));
+    
+    // ตรวจสอบและซิงค์ข้อมูลต้นราชพฤกษ์หรือข้อมูลใหม่ๆ เข้าไปใน LocalStorage อัตโนมัติ
+    if (!allTreesCache.some(i => i.tree_id === 'plant-1-0031' || i.plant_name === 'ราชพฤกษ์')) {
+      allTreesCache.push({
+        "no": "30",
+        "tree_id": "plant-1-0031",
+        "plant_name": "ราชพฤกษ์",
+        "local_name": "คูน / ราชพฤกษ์",
+        "scientific_name": "Cassia fistula L. (FABACEAE)",
+        "family_name": "FABACEAE",
+        "stem_info": "ไม้ยืนต้นขนาดกลาง สูง 10-20 เมตร เปลือกนอกสีเทาเรียบหรือแตกเป็นร่องตื้น",
+        "leaf_info": "ใบประกอบแบบขนนกปลายคู่ เรียงสลับ ใบย่อยรูปไข่หรือรูปรี ปลายมน",
+        "properties_info": "ดอกแก้ริดสีดวงทวาร ฝักแก้ท้องผูก เนื้อไม้แข็งใช้ทำเสาบ้านและเครื่องเรือน"
+      });
+      localStorage.setItem('skc_plant_data', JSON.stringify(allTreesCache));
+    }
 
     const translations = {
       th: {
@@ -765,7 +813,6 @@
             fetchWeatherAndLocationName(position.coords.latitude, position.coords.longitude);
           },
           (error) => {
-            // ค่าพิกัดสำรองกรณีผู้ใช้ไม่อนุญาต GPS (ใช้พิกัด สกลนคร)
             fetchWeatherAndLocationName(17.1631, 103.7371, "สกลนคร");
           },
           { timeout: 10000, maximumAge: 60000 }
@@ -777,8 +824,6 @@
 
     async function fetchWeatherAndLocationName(lat, lon, fallbackName = null) {
       let locationLabel = fallbackName;
-      
-      // พยายามแปลงพิกัดเป็นชื่อเมืองผ่าน Nominatim (ถ้าไม่ได้ จะแสดงพิกัดหรือชื่อสำรอง)
       if (!locationLabel) {
         try {
           const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=th`);
@@ -793,7 +838,6 @@
         }
       }
 
-      // ดึงข้อมูลอุณหภูมิและความชื้นจาก Open-Meteo API
       try {
         const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m`);
         const weatherData = await weatherRes.json();
@@ -966,12 +1010,14 @@
       document.getElementById('tree-id-badge').innerText = tree.tree_id || '-';
       document.getElementById('tree-no').innerText = `ลำดับ: ${tree.no || '-'}`;
       document.getElementById('tree-family').innerText = tree.family_name || 'ไม่ระบุวงศ์';
-      document.getElementById('tree-plant-name').innerText = tree.plant_name || '-';
+      
+      // รองรับคีย์ทุกรูปแบบ ป้องกันค่าว่างหรือเครื่องหมายขีด -
+      document.getElementById('tree-plant-name').innerText = tree.plant_name || tree.name || '-';
       document.getElementById('tree-local-name').innerText = tree.local_name || '-';
       document.getElementById('tree-science').innerText = tree.science_name || '-';
-      document.getElementById('tree-stem').innerText = tree.stem_info || '-';
-      document.getElementById('tree-leaf').innerText = tree.leaf_info || '-';
-      document.getElementById('tree-properties').innerText = tree.properties_info || '-';
+      document.getElementById('tree-stem').innerText = tree.stem_info || tree.trunk || tree.ไม้ || '-';
+      document.getElementById('tree-leaf').innerText = tree.leaf_info || tree.leaf || '-';
+      document.getElementById('tree-properties').innerText = tree.properties_info || tree.property || '-';
 
       updateAdminUI();
     }
@@ -1118,7 +1164,7 @@
         <div class="flex items-center justify-between p-2.5 bg-white/80 dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 text-xs shadow-sm transition hover:border-emerald-300">
           <div class="truncate pr-2">
             <span class="font-mono bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-md mr-1.5 font-bold">${item.tree_id}</span>
-            <span class="font-bold text-gray-800 dark:text-slate-200">${item.plant_name}</span>
+            <span class="font-bold text-gray-800 dark:text-slate-200">${item.plant_name || item.name}</span>
             <span class="text-gray-400 block text-[10px] truncate mt-0.5">${item.science_name || '-'}</span>
           </div>
           <div class="flex gap-1.5 shrink-0">
@@ -1134,6 +1180,7 @@
       const filtered = allTreesCache.filter(item => 
         (item.tree_id && item.tree_id.toLowerCase().includes(keyword)) ||
         (item.plant_name && item.plant_name.toLowerCase().includes(keyword)) ||
+        (item.name && item.name.toLowerCase().includes(keyword)) ||
         (item.local_name && item.local_name.toLowerCase().includes(keyword)) ||
         (item.science_name && item.science_name.toLowerCase().includes(keyword)) ||
         (item.properties_info && item.properties_info.toLowerCase().includes(keyword))
@@ -1212,13 +1259,13 @@
 
       document.getElementById('edit-tree-id').innerText = currentTreeData.tree_id || '';
       document.getElementById('edit-no').value = currentTreeData.no || '';
-      document.getElementById('edit-plant-name').value = currentTreeData.plant_name || '';
+      document.getElementById('edit-plant-name').value = currentTreeData.plant_name || currentTreeData.name || '';
       document.getElementById('edit-local-name').value = currentTreeData.local_name || '';
       document.getElementById('edit-science-name').value = currentTreeData.science_name || '';
       document.getElementById('edit-family-name').value = currentTreeData.family_name || '';
-      document.getElementById('edit-stem-info').value = currentTreeData.stem_info || '';
-      document.getElementById('edit-leaf-info').value = currentTreeData.leaf_info || '';
-      document.getElementById('edit-properties-info').value = currentTreeData.properties_info || '';
+      document.getElementById('edit-stem-info').value = currentTreeData.stem_info || currentTreeData.trunk || currentTreeData.ไม้ || '';
+      document.getElementById('edit-leaf-info').value = currentTreeData.leaf_info || currentTreeData.leaf || '';
+      document.getElementById('edit-properties-info').value = currentTreeData.properties_info || currentTreeData.property || '';
 
       document.getElementById('image-preview-container').classList.add('hidden');
       document.getElementById('edit-image-file').value = '';
@@ -1327,7 +1374,7 @@
       const targetIdEl = document.getElementById('qr-target-id');
 
       container.innerHTML = "";
-      targetIdEl.innerText = `รหัส: ${currentTreeData.tree_id} (${currentTreeData.plant_name})`;
+      targetIdEl.innerText = `รหัส: ${currentTreeData.tree_id} (${currentTreeData.plant_name || currentTreeData.name})`;
       modal.classList.remove('hidden');
 
       new QRCode(container, {
@@ -1353,6 +1400,7 @@
       if (!canvas) return;
       
       const dataUrl = canvas.toDataURL();
+      const pName = currentTreeData.plant_name || currentTreeData.name;
       const windowContent = `
         <!DOCTYPE html>
         <html lang="th">
@@ -1374,7 +1422,7 @@
           <div class="badge-card">
             <div class="header">โครงการอนุรักษ์พันธุกรรมพืชอันเนื่องมาจากพระราชดำริ (อพ.สธ.)</div>
             <div class="sub-header">SKCPlant Botanical Database</div>
-            <div class="plant-name">${currentTreeData.plant_name}</div>
+            <div class="plant-name">${pName}</div>
             <div class="science-name">${currentTreeData.science_name || ''}</div>
             <div class="qr-box">
               <img src="${dataUrl}" width="140" height="140">
