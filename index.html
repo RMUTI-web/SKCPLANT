@@ -45,13 +45,11 @@
 
         <div class="flex-1 w-full h-full flex flex-col justify-center items-center min-h-0 overflow-y-auto no-scrollbar relative">
 
+            <!-- ==================== 1. SCANNER VIEW ==================== -->
             <section id="scanner-view" class="w-full flex flex-col items-center justify-center animate-fade-in my-auto">
                 <div class="w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-xl border border-emerald-100 p-5 text-center flex flex-col items-center justify-center">
-                    
                     <div class="space-y-1 mb-2">
-                        <div class="inline-block p-2 bg-emerald-100 rounded-2xl text-emerald-700 text-lg shadow-inner mb-1">
-                            📷
-                        </div>
+                        <div class="inline-block p-2 bg-emerald-100 rounded-2xl text-emerald-700 text-lg shadow-inner mb-1">📷</div>
                         <h2 class="text-base font-bold text-emerald-900">สแกน QR Code พรรณไม้</h2>
                         <p class="text-[11px] text-gray-500 leading-tight max-w-[220px] mx-auto">ส่องกล้องไปที่ป้าย QR Code เพื่อดูข้อมูลพฤกษศาสตร์</p>
                     </div>
@@ -61,26 +59,19 @@
                     </div>
                     
                     <div class="grid grid-cols-2 gap-2 w-full max-w-[240px] pt-1">
-                        <button onclick="startScanner()" class="bg-emerald-600 active:bg-emerald-700 text-white py-2.5 rounded-xl text-xs font-semibold shadow transition flex items-center justify-center gap-1">
-                            <span>▶️</span> เปิดกล้อง
-                        </button>
-                        <button onclick="stopScanner()" class="bg-rose-500 active:bg-rose-600 text-white py-2.5 rounded-xl text-xs font-semibold shadow transition flex items-center justify-center gap-1">
-                            <span>⏹️</span> ปิดกล้อง
-                        </button>
+                        <button onclick="startScanner()" class="bg-emerald-600 active:bg-emerald-700 text-white py-2.5 rounded-xl text-xs font-semibold shadow transition flex items-center justify-center gap-1">▶️ เปิดกล้อง</button>
+                        <button onclick="stopScanner()" class="bg-rose-500 active:bg-rose-600 text-white py-2.5 rounded-xl text-xs font-semibold shadow transition flex items-center justify-center gap-1">⏹️ ปิดกล้อง</button>
                     </div>
                 </div>
             </section>
 
+            <!-- ==================== 2. USER PLANT DETAIL VIEW ==================== -->
             <section id="user-view" class="hidden w-full animate-fade-in space-y-3 my-auto pb-4">
                 <div>
-                    <button onclick="switchToScannerView()" class="bg-emerald-800/90 text-white px-3.5 py-2 rounded-xl text-xs font-semibold active:bg-emerald-900 transition flex items-center gap-1 shadow">
-                        <span>📷</span> กลับไปสแกน QR ใหม่
-                    </button>
+                    <button onclick="switchToScannerView()" class="bg-emerald-800/90 text-white px-3.5 py-2 rounded-xl text-xs font-semibold active:bg-emerald-900 transition flex items-center gap-1 shadow">📷 กลับไปสแกน QR ใหม่</button>
                 </div>
 
-                <div id="loading" class="bg-white rounded-3xl p-6 text-center shadow text-gray-500 animate-pulse border border-emerald-50 text-xs">
-                    🌿 กำลังดึงข้อมูลพรรณไม้...
-                </div>
+                <div id="loading" class="bg-white rounded-3xl p-6 text-center shadow text-gray-500 animate-pulse border border-emerald-50 text-xs">🌿 กำลังดึงข้อมูลพรรณไม้...</div>
 
                 <div id="content" class="hidden bg-white rounded-3xl shadow-xl overflow-hidden border border-emerald-100">
                     <div class="relative h-48 bg-emerald-950 overflow-hidden">
@@ -103,22 +94,19 @@
                         </div>
 
                         <div class="space-y-0.5">
-                            <h3 class="font-bold text-emerald-900 flex items-center gap-1 text-[11px]">
-                                <span class="p-0.5 bg-emerald-100 rounded">🌿</span> ลักษณะทางพฤกษศาสตร์
-                            </h3>
+                            <h3 class="font-bold text-emerald-900 flex items-center gap-1 text-[11px]"><span class="p-0.5 bg-emerald-100 rounded">🌿</span> ลักษณะทางพฤกษศาสตร์</h3>
                             <p id="botany-desc" class="text-gray-600 text-[11px] leading-relaxed bg-gray-50 p-2.5 rounded-xl border border-gray-100"></p>
                         </div>
 
                         <div class="space-y-0.5">
-                            <h3 class="font-bold text-amber-800 flex items-center gap-1 text-[11px]">
-                                <span class="p-0.5 bg-amber-100 rounded">💊</span> สรรพคุณทางยา / พื้นบ้าน
-                            </h3>
+                            <h3 class="font-bold text-amber-800 flex items-center gap-1 text-[11px]"><span class="p-0.5 bg-amber-100 rounded">💊</span> สรรพคุณทางยา / พื้นบ้าน</h3>
                             <p id="properties-desc" class="text-gray-600 text-[11px] leading-relaxed bg-amber-50/50 p-2.5 rounded-xl border border-amber-100/80"></p>
                         </div>
                     </div>
                 </div>
             </section>
 
+            <!-- ==================== 3. ADMIN DASHBOARD VIEW ==================== -->
             <section id="admin-view" class="hidden w-full animate-fade-in space-y-3 my-auto pb-4">
                 <div class="bg-white p-3 rounded-2xl shadow border border-emerald-100 flex justify-between items-center gap-2">
                     <div>
@@ -132,10 +120,10 @@
                 </div>
 
                 <div class="bg-white rounded-2xl shadow overflow-hidden border border-emerald-100">
-                    <div class="overflow-x-auto no-scrollbar">
+                    <div class="overflow-x-auto no-scrollbar max-h-[60vh]">
                         <table class="w-full text-left border-collapse text-[11px]">
-                            <thead>
-                                <tr class="bg-emerald-50 text-emerald-900 border-b border-emerald-100">
+                            <thead class="sticky top-0 bg-emerald-50 z-10">
+                                <tr class="text-emerald-900 border-b border-emerald-100">
                                     <th class="p-2.5 font-bold">รหัส</th>
                                     <th class="p-2.5 font-bold">ชื่อพรรณไม้</th>
                                     <th class="p-2.5 text-center font-bold">จัดการ</th>
@@ -157,6 +145,7 @@
 
     </main>
 
+    <!-- MODALS -->
     <div id="login-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-3xl max-w-xs w-full p-5 space-y-3 shadow-2xl border border-emerald-50 animate-fade-in">
             <div class="text-center">
@@ -220,11 +209,12 @@
             </div>
             <div class="flex gap-2">
                 <button onclick="closeQrModal()" class="w-1/2 py-1.5 border rounded-xl text-xs font-semibold text-gray-600">ปิด</button>
-                <a id="download-qr-btn" download="plant-qr.png" class="w-1/2 bg-emerald-600 text-white py-1.5 rounded-xl text-xs font-semibold flex items-center justify-center shadow">ดาวน์โหลด</a>
+                <a id="download-qr-btn" download="plant-qr.png" class="w-1/2 bg-emerald-600 text-white py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center shadow">ดาวน์โหลด</a>
             </div>
         </div>
     </div>
 
+    <!-- SCRIPT -->
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbw-k1qAPvvteZ177y_o2JOyUdiD-GZXD3e541yfy7JexGrZERenkKdLO6MA9RFC50jUCQ/exec";
         let plantsList = [];
@@ -366,27 +356,35 @@
             plantsList.forEach(p => {
                 tbody.innerHTML += `
                     <tr class="hover:bg-emerald-50/50 transition border-b border-gray-100">
-                        <td class="p-2.5 font-semibold text-emerald-800 font-mono">${p.รหัส}</td>
-                        <td class="p-2.5 font-medium">${p.ชื่อพรรณไม้}</td>
-                        <td class="p-2.5 text-center space-x-1">
-                            <button onclick="openEditModal('${p.รหัส}')" class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-[10px] font-semibold">แก้ไข</button>
-                            <button onclick="showQrCode('${p.รหัส}', '${p.ชื่อพรรณไม้}')" class="bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded text-[10px] font-semibold">QR</button>
+                        <td class="p-2 font-semibold text-emerald-800 font-mono">${p.รหัส}</td>
+                        <td class="p-2 font-medium">${p.ชื่อพรรณไม้}</td>
+                        <td class="p-2 text-center space-x-0.5">
+                            <button onclick="openEditModal('${p.รหัส}')" class="bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded text-[10px] font-semibold">แก้ไข</button>
+                            <button onclick="showQrCode('${p.รหัส}', '${p.ชื่อพรรณไม้}')" class="bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded text-[10px] font-semibold">QR</button>
+                            <button onclick="deletePlant('${p.รหัส}', '${p.ชื่อพรรณไม้}')" class="bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded text-[10px] font-semibold">ลบ</button>
                         </td>
                     </tr>
                 `;
             });
         }
 
+        // Logic การเจนรหัสใหม่ Auto รันได้ไม่จำกัด (แก้ไขจุดรันแล้วไม่เพิ่มแล้ว)
         function openAddModal() {
             document.getElementById('modal-title').innerText = "เพิ่มพรรณไม้ใหม่";
             let maxNum = 0;
+            
             plantsList.forEach(p => {
-                if (p.รหัส && String(p.รหัส).includes('plant1-')) {
-                    const numPart = parseInt(String(p.รหัส).replace('plant1-', ''), 10);
-                    if (!isNaN(numPart) && numPart > maxNum) maxNum = numPart;
+                if (p.รหัส) {
+                    const match = String(p.รหัส).match(/\d+/);
+                    if (match) {
+                        const num = parseInt(match[0], 10);
+                        if (num > maxNum) maxNum = num;
+                    }
                 }
             });
-            document.getElementById('m-code').value = `plant1-${String(maxNum + 1).padStart(4, '0')}`;
+
+            const nextNum = maxNum + 1;
+            document.getElementById('m-code').value = `plant1-${String(nextNum).padStart(4, '0')}`;
             document.getElementById('m-name').value = '';
             document.getElementById('m-local').value = '';
             document.getElementById('m-sci').value = '';
@@ -418,6 +416,27 @@
             document.getElementById('plant-modal').classList.add('hidden');
         }
 
+        // ฟังก์ชันลบพรรณไม้
+        function deletePlant(code, name) {
+            if (confirm(`คุณต้องการลบพรรณไม้ "${name}" (${code}) ใช่หรือไม่?`)) {
+                showToast("⏳ กำลังลบข้อมูล...");
+                fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'delete', รหัส: code })
+                })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.status === 'success') {
+                        showToast("🗑️ ลบข้อมูลเรียบร้อยแล้ว");
+                        fetchAllPlants(() => renderAdminTable());
+                    } else {
+                        showToast("❌ ลบไม่สำเร็จ");
+                    }
+                })
+                .catch(() => showToast("❌ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้"));
+            }
+        }
+
         document.getElementById('m-img-file').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
@@ -436,7 +455,6 @@
 
             const payload = {
                 action: 'addOrUpdate',
-                ลำดับ: plantsList.length + 1,
                 รหัส: document.getElementById('m-code').value,
                 ชื่อพรรณไม้: document.getElementById('m-name').value,
                 ชื่อท้องถิ่น: document.getElementById('m-local').value,
