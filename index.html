@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>SKC-Plant</title>
     
-    <!-- App Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#064e3b">
@@ -30,69 +29,60 @@
         
         input, textarea, select { font-size: 16px !important; }
 
-        /* รองรับ Safe Area ด้านบนและล่าง */
         .safe-area-container {
-            padding-top: max(0.75rem, env(safe-area-inset-top));
-            padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+            padding-top: max(1rem, env(safe-area-inset-top));
+            padding-bottom: max(1rem, env(safe-area-inset-bottom));
         }
     </style>
 </head>
 <body class="bg-slate-900 h-full w-full overflow-hidden flex justify-center items-center">
 
-    <!-- Container หลัก: บังคับให้อยู่ในหน้าจอพอดี ไม่เกิด scrollbar นอก -->
-    <main class="w-full max-w-md h-[100dvh] bg-gradient-to-br from-emerald-50 via-teal-50 to-green-100 flex flex-col justify-between relative overflow-hidden shadow-2xl safe-area-container px-3 py-2">
+    <main class="w-full max-w-md h-[100dvh] bg-gradient-to-br from-emerald-50 via-teal-50 to-green-100 flex flex-col relative overflow-hidden shadow-2xl safe-area-container px-4 py-3">
 
-        <!-- ปุ่มเข้าสู่ระบบแอดมินลอยมุมขวาบน (ปรับย่อขนาดลง) -->
-        <button onclick="toggleAdminModal()" class="absolute top-3 right-3 z-40 bg-emerald-800/80 backdrop-blur-md text-white p-2 rounded-full shadow border border-white/20 active:scale-95 transition text-xs" title="สลับโหมดแอดมิน">
+        <button onclick="toggleAdminModal()" class="absolute top-4 right-4 z-40 bg-emerald-800/80 backdrop-blur-md text-white p-2.5 rounded-full shadow border border-white/20 active:scale-95 transition text-xs" title="สลับโหมดแอดมิน">
             🔐
         </button>
 
-        <!-- Main Content Area -->
-        <div class="flex-1 w-full h-full flex flex-col min-h-0 overflow-y-auto no-scrollbar relative justify-center">
+        <div class="flex-1 w-full h-full flex flex-col justify-center items-center min-h-0 overflow-y-auto no-scrollbar relative">
 
-            <!-- ==================== 1. SCANNER VIEW (แบบกระชับ Compact) ==================== -->
-            <section id="scanner-view" class="w-full flex flex-col animate-fade-in my-auto items-center justify-center">
-                <div class="w-full bg-white/95 backdrop-blur-md rounded-2xl shadow-lg border border-emerald-100 p-3.5 text-center flex flex-col items-center justify-between">
+            <section id="scanner-view" class="w-full flex flex-col items-center justify-center animate-fade-in my-auto">
+                <div class="w-full bg-white/95 backdrop-blur-md rounded-3xl shadow-xl border border-emerald-100 p-5 text-center flex flex-col items-center justify-center">
                     
-                    <!-- หัวข้อและคำอธิบาย (กระชับ) -->
-                    <div class="space-y-0.5">
-                        <div class="inline-block p-1.5 bg-emerald-100 rounded-xl text-emerald-700 text-base shadow-inner mb-0.5">
+                    <div class="space-y-1 mb-2">
+                        <div class="inline-block p-2 bg-emerald-100 rounded-2xl text-emerald-700 text-lg shadow-inner mb-1">
                             📷
                         </div>
-                        <h2 class="text-sm font-bold text-emerald-900">สแกน QR Code พรรณไม้</h2>
-                        <p class="text-[10px] text-gray-500 leading-tight max-w-[220px] mx-auto">ส่องกล้องไปที่ป้าย QR Code เพื่อดูข้อมูลพฤกษศาสตร์</p>
+                        <h2 class="text-base font-bold text-emerald-900">สแกน QR Code พรรณไม้</h2>
+                        <p class="text-[11px] text-gray-500 leading-tight max-w-[220px] mx-auto">ส่องกล้องไปที่ป้าย QR Code เพื่อดูข้อมูลพฤกษศาสตร์</p>
                     </div>
                     
-                    <!-- กรอบกล้องสแกนย่อลงเหลือ max 220px เพื่อความกะทัดรัด -->
-                    <div class="my-2.5 w-full max-w-[210px] aspect-square rounded-xl overflow-hidden border-2 border-emerald-300 bg-black shadow-inner relative flex items-center justify-center">
+                    <div class="my-3 w-full max-w-[220px] aspect-square rounded-2xl overflow-hidden border-2 border-emerald-300 bg-black shadow-inner relative flex items-center justify-center">
                         <div id="reader" class="w-full h-full object-cover"></div>
                     </div>
                     
-                    <!-- ปุ่มเปิด/ปิดกล้อง (ปรับปุ่มให้เล็กกระชับ) -->
-                    <div class="grid grid-cols-2 gap-2 w-full max-w-[240px]">
-                        <button onclick="startScanner()" class="bg-emerald-600 active:bg-emerald-700 text-white py-2 rounded-lg text-[11px] font-semibold shadow transition flex items-center justify-center gap-1">
+                    <div class="grid grid-cols-2 gap-2 w-full max-w-[240px] pt-1">
+                        <button onclick="startScanner()" class="bg-emerald-600 active:bg-emerald-700 text-white py-2.5 rounded-xl text-xs font-semibold shadow transition flex items-center justify-center gap-1">
                             <span>▶️</span> เปิดกล้อง
                         </button>
-                        <button onclick="stopScanner()" class="bg-rose-500 active:bg-rose-600 text-white py-2 rounded-lg text-[11px] font-semibold shadow transition flex items-center justify-center gap-1">
+                        <button onclick="stopScanner()" class="bg-rose-500 active:bg-rose-600 text-white py-2.5 rounded-xl text-xs font-semibold shadow transition flex items-center justify-center gap-1">
                             <span>⏹️</span> ปิดกล้อง
                         </button>
                     </div>
                 </div>
             </section>
 
-            <!-- ==================== 2. USER PLANT DETAIL VIEW ==================== -->
-            <section id="user-view" class="hidden animate-fade-in space-y-2.5 pb-4">
+            <section id="user-view" class="hidden w-full animate-fade-in space-y-3 my-auto pb-4">
                 <div>
-                    <button onclick="switchToScannerView()" class="bg-emerald-800/90 text-white px-3 py-1.5 rounded-lg text-[11px] font-semibold active:bg-emerald-900 transition flex items-center gap-1 shadow">
+                    <button onclick="switchToScannerView()" class="bg-emerald-800/90 text-white px-3.5 py-2 rounded-xl text-xs font-semibold active:bg-emerald-900 transition flex items-center gap-1 shadow">
                         <span>📷</span> กลับไปสแกน QR ใหม่
                     </button>
                 </div>
 
-                <div id="loading" class="bg-white rounded-2xl p-6 text-center shadow text-gray-500 animate-pulse border border-emerald-50 text-xs">
+                <div id="loading" class="bg-white rounded-3xl p-6 text-center shadow text-gray-500 animate-pulse border border-emerald-50 text-xs">
                     🌿 กำลังดึงข้อมูลพรรณไม้...
                 </div>
 
-                <div id="content" class="hidden bg-white rounded-2xl shadow-lg overflow-hidden border border-emerald-100">
+                <div id="content" class="hidden bg-white rounded-3xl shadow-xl overflow-hidden border border-emerald-100">
                     <div class="relative h-48 bg-emerald-950 overflow-hidden">
                         <img id="plant-img" src="" alt="ภาพพรรณไม้" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=600&q=80'">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
@@ -101,7 +91,7 @@
                         </div>
                     </div>
 
-                    <div class="p-3 space-y-3">
+                    <div class="p-3.5 space-y-3">
                         <div>
                             <h1 id="plant-name" class="text-base font-bold text-emerald-900"></h1>
                             <p id="local-name" class="text-emerald-700 text-[11px] font-semibold mt-0.5 bg-emerald-50 inline-block px-2 py-0.5 rounded-md border border-emerald-100"></p>
@@ -129,27 +119,26 @@
                 </div>
             </section>
 
-            <!-- ==================== 3. ADMIN DASHBOARD VIEW ==================== -->
-            <section id="admin-view" class="hidden animate-fade-in space-y-2.5 pb-4">
-                <div class="bg-white p-3 rounded-xl shadow border border-emerald-100 flex justify-between items-center gap-2">
+            <section id="admin-view" class="hidden w-full animate-fade-in space-y-3 my-auto pb-4">
+                <div class="bg-white p-3 rounded-2xl shadow border border-emerald-100 flex justify-between items-center gap-2">
                     <div>
                         <h1 class="text-sm font-bold text-emerald-900">🛠️ จัดการข้อมูลพรรณไม้</h1>
                         <p class="text-gray-400 text-[9px]">ระบบแอดมิน SKC-Plant</p>
                     </div>
                     <div class="flex gap-1">
-                        <button onclick="openAddModal()" class="bg-emerald-600 text-white px-2.5 py-1.5 rounded-lg text-[11px] font-semibold active:bg-emerald-700 transition shadow">➕ เพิ่ม</button>
-                        <button onclick="switchToScannerView()" class="bg-gray-100 text-gray-700 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold active:bg-gray-200 transition">ออก</button>
+                        <button onclick="openAddModal()" class="bg-emerald-600 text-white px-2.5 py-1.5 rounded-xl text-[11px] font-semibold active:bg-emerald-700 transition shadow">➕ เพิ่ม</button>
+                        <button onclick="switchToScannerView()" class="bg-gray-100 text-gray-700 px-2.5 py-1.5 rounded-xl text-[11px] font-semibold active:bg-gray-200 transition">ออก</button>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl shadow overflow-hidden border border-emerald-100">
+                <div class="bg-white rounded-2xl shadow overflow-hidden border border-emerald-100">
                     <div class="overflow-x-auto no-scrollbar">
                         <table class="w-full text-left border-collapse text-[11px]">
                             <thead>
                                 <tr class="bg-emerald-50 text-emerald-900 border-b border-emerald-100">
-                                    <th class="p-2 font-bold">รหัส</th>
-                                    <th class="p-2 font-bold">ชื่อพรรณไม้</th>
-                                    <th class="p-2 text-center font-bold">จัดการ</th>
+                                    <th class="p-2.5 font-bold">รหัส</th>
+                                    <th class="p-2.5 font-bold">ชื่อพรรณไม้</th>
+                                    <th class="p-2.5 text-center font-bold">จัดการ</th>
                                 </tr>
                             </thead>
                             <tbody id="plant-table-body" class="divide-y divide-gray-100">
@@ -162,85 +151,80 @@
 
         </div>
 
-        <!-- Toast Notification -->
         <div id="toast" class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-emerald-900/90 text-white text-[11px] px-3.5 py-2 rounded-full shadow-xl backdrop-blur-md hidden transition-all z-50 pointer-events-none">
             <span id="toast-msg">บันทึกเรียบร้อย</span>
         </div>
 
     </main>
 
-    <!-- ==================== MODALS ==================== -->
-    <!-- Login Modal -->
     <div id="login-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl max-w-xs w-full p-4 space-y-2.5 shadow-2xl border border-emerald-50 animate-fade-in">
+        <div class="bg-white rounded-3xl max-w-xs w-full p-5 space-y-3 shadow-2xl border border-emerald-50 animate-fade-in">
             <div class="text-center">
-                <div class="inline-block p-2 bg-emerald-100 text-emerald-700 rounded-xl text-base mb-0.5">🔐</div>
+                <div class="inline-block p-2 bg-emerald-100 text-emerald-700 rounded-2xl text-base mb-1">🔐</div>
                 <h2 class="text-sm font-bold text-emerald-900">เข้าสู่ระบบแอดมิน</h2>
             </div>
-            <div class="space-y-2">
+            
+            <form onsubmit="event.preventDefault(); handleLogin();" class="space-y-2.5" autocomplete="off">
                 <div>
-                    <label class="text-[10px] font-semibold text-gray-600">อีเมล</label>
-                    <input type="email" id="login-email" placeholder="admin@tree.com" class="w-full p-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 mt-0.5">
+                    <label class="text-[11px] font-semibold text-gray-600">อีเมลแอดมิน</label>
+                    <input type="email" id="login-email" autocomplete="off" class="w-full p-2.5 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 mt-1">
                 </div>
                 <div>
-                    <label class="text-[10px] font-semibold text-gray-600">รหัสผ่าน</label>
-                    <input type="password" id="login-pass" placeholder="123456" class="w-full p-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 mt-0.5">
+                    <label class="text-[11px] font-semibold text-gray-600">รหัสผ่าน</label>
+                    <input type="password" id="login-pass" autocomplete="new-password" class="w-full p-2.5 border border-gray-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 mt-1">
                 </div>
-                <button onclick="handleLogin()" class="w-full bg-emerald-600 text-white py-2 rounded-lg font-semibold text-xs active:bg-emerald-700 transition shadow">เข้าสู่ระบบ</button>
-                <p id="login-error" class="text-rose-500 text-[10px] text-center hidden font-medium">ข้อมูลไม่ถูกต้อง</p>
-                <button onclick="toggleAdminModal()" class="w-full text-gray-400 text-[10px] text-center pt-0.5">ยกเลิก</button>
-            </div>
+                <button type="submit" class="w-full bg-emerald-600 text-white py-2.5 rounded-xl font-semibold text-xs active:bg-emerald-700 transition shadow">เข้าสู่ระบบ</button>
+                <p id="login-error" class="text-rose-500 text-[10px] text-center hidden font-medium">ข้อมูลอีเมลหรือรหัสผ่านไม่ถูกต้อง</p>
+                <button type="button" onclick="toggleAdminModal()" class="w-full text-gray-400 text-[11px] text-center pt-0.5">ยกเลิก</button>
+            </form>
         </div>
     </div>
 
-    <!-- Add/Edit Plant Modal -->
     <div id="plant-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
-        <div class="bg-white rounded-t-2xl sm:rounded-2xl max-w-md w-full p-4 space-y-2.5 max-h-[85vh] overflow-y-auto shadow-2xl border border-emerald-50 animate-fade-in">
+        <div class="bg-white rounded-t-3xl sm:rounded-3xl max-w-md w-full p-4 space-y-2.5 max-h-[85vh] overflow-y-auto shadow-2xl border border-emerald-50 animate-fade-in">
             <h2 id="modal-title" class="text-sm font-bold text-emerald-900 border-b pb-1.5">เพิ่มพรรณไม้ใหม่</h2>
             <div class="space-y-2 text-[11px]">
                 <div>
                     <label class="font-semibold text-gray-600">รหัส (Auto)</label>
-                    <input type="text" id="m-code" readonly class="w-full p-1.5 bg-gray-100 border rounded-lg text-gray-500 mt-0.5 font-mono">
+                    <input type="text" id="m-code" readonly class="w-full p-1.5 bg-gray-100 border rounded-xl text-gray-500 mt-0.5 font-mono">
                 </div>
                 <div class="grid grid-cols-2 gap-2">
-                    <div><label class="font-semibold text-gray-600">ชื่อพรรณไม้</label><input type="text" id="m-name" class="w-full p-1.5 border rounded-lg mt-0.5 focus:ring-2 focus:ring-emerald-500"></div>
-                    <div><label class="font-semibold text-gray-600">ชื่อท้องถิ่น</label><input type="text" id="m-local" class="w-full p-1.5 border rounded-lg mt-0.5 focus:ring-2 focus:ring-emerald-500"></div>
+                    <div><label class="font-semibold text-gray-600">ชื่อพรรณไม้</label><input type="text" id="m-name" class="w-full p-1.5 border rounded-xl mt-0.5 focus:ring-2 focus:ring-emerald-500"></div>
+                    <div><label class="font-semibold text-gray-600">ชื่อท้องถิ่น</label><input type="text" id="m-local" class="w-full p-1.5 border rounded-xl mt-0.5 focus:ring-2 focus:ring-emerald-500"></div>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
-                    <div><label class="font-semibold text-gray-600">ชื่อวิทยาศาสตร์</label><input type="text" id="m-sci" class="w-full p-1.5 border rounded-lg mt-0.5 focus:ring-2 focus:ring-emerald-500"></div>
-                    <div><label class="font-semibold text-gray-600">ชื่อวงศ์</label><input type="text" id="m-family" class="w-full p-1.5 border rounded-lg mt-0.5 focus:ring-2 focus:ring-emerald-500"></div>
+                    <div><label class="font-semibold text-gray-600">ชื่อวิทยาศาสตร์</label><input type="text" id="m-sci" class="w-full p-1.5 border rounded-xl mt-0.5 focus:ring-2 focus:ring-emerald-500"></div>
+                    <div><label class="font-semibold text-gray-600">ชื่อวงศ์</label><input type="text" id="m-family" class="w-full p-1.5 border rounded-xl mt-0.5 focus:ring-2 focus:ring-emerald-500"></div>
                 </div>
-                <div><label class="font-semibold text-gray-600">ลักษณะพฤกษศาสตร์</label><textarea id="m-botany" rows="2" class="w-full p-1.5 border rounded-lg mt-0.5 focus:ring-2 focus:ring-emerald-500"></textarea></div>
-                <div><label class="font-semibold text-gray-600">สรรพคุณทางยา</label><textarea id="m-prop" rows="2" class="w-full p-1.5 border rounded-lg mt-0.5 focus:ring-2 focus:ring-emerald-500"></textarea></div>
+                <div><label class="font-semibold text-gray-600">ลักษณะพฤกษศาสตร์</label><textarea id="m-botany" rows="2" class="w-full p-1.5 border rounded-xl mt-0.5 focus:ring-2 focus:ring-emerald-500"></textarea></div>
+                <div><label class="font-semibold text-gray-600">สรรพคุณทางยา</label><textarea id="m-prop" rows="2" class="w-full p-1.5 border rounded-xl mt-0.5 focus:ring-2 focus:ring-emerald-500"></textarea></div>
                 <div>
                     <label class="font-semibold text-gray-600">แนบไฟล์รูปภาพ</label>
-                    <input type="file" id="m-img-file" accept="image/*" class="w-full p-1 border rounded-lg text-gray-500 mt-0.5 file:mr-2 file:py-0.5 file:px-2 file:rounded-md file:border-0 file:bg-emerald-50 file:text-emerald-700">
+                    <input type="file" id="m-img-file" accept="image/*" class="w-full p-1 border rounded-xl text-gray-500 mt-0.5 file:mr-2 file:py-0.5 file:px-2 file:rounded-md file:border-0 file:bg-emerald-50 file:text-emerald-700">
                     <input type="hidden" id="m-img">
                 </div>
             </div>
             <div class="flex justify-end gap-1.5 pt-1.5 border-t">
-                <button onclick="closePlantModal()" class="px-3 py-1.5 border rounded-lg text-[11px] font-semibold text-gray-600">ยกเลิก</button>
-                <button id="save-btn" onclick="savePlantData()" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-[11px] font-semibold shadow">บันทึก</button>
+                <button onclick="closePlantModal()" class="px-3 py-1.5 border rounded-xl text-[11px] font-semibold text-gray-600">ยกเลิก</button>
+                <button id="save-btn" onclick="savePlantData()" class="px-3 py-1.5 bg-emerald-600 text-white rounded-xl text-[11px] font-semibold shadow">บันทึก</button>
             </div>
         </div>
     </div>
 
-    <!-- QR Code Modal -->
     <div id="qr-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl max-w-xs w-full p-4 text-center space-y-2.5 shadow-2xl border border-emerald-50 animate-fade-in">
+        <div class="bg-white rounded-3xl max-w-xs w-full p-4 text-center space-y-2.5 shadow-2xl border border-emerald-50 animate-fade-in">
             <h3 class="text-xs font-bold text-emerald-900">QR Code พรรณไม้</h3>
             <p id="qr-plant-title" class="text-[11px] text-gray-500 font-mono"></p>
             <div class="flex justify-center bg-gray-50 p-2.5 rounded-xl border shadow-inner">
                 <canvas id="qrcode-canvas"></canvas>
             </div>
             <div class="flex gap-2">
-                <button onclick="closeQrModal()" class="w-1/2 py-1.5 border rounded-lg text-xs font-semibold text-gray-600">ปิด</button>
-                <a id="download-qr-btn" download="plant-qr.png" class="w-1/2 bg-emerald-600 text-white py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center shadow">ดาวน์โหลด</a>
+                <button onclick="closeQrModal()" class="w-1/2 py-1.5 border rounded-xl text-xs font-semibold text-gray-600">ปิด</button>
+                <a id="download-qr-btn" download="plant-qr.png" class="w-1/2 bg-emerald-600 text-white py-1.5 rounded-xl text-xs font-semibold flex items-center justify-center shadow">ดาวน์โหลด</a>
             </div>
         </div>
     </div>
 
-    <!-- ==================== SCRIPT LOGIC ==================== -->
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbw-k1qAPvvteZ177y_o2JOyUdiD-GZXD3e541yfy7JexGrZERenkKdLO6MA9RFC50jUCQ/exec";
         let plantsList = [];
@@ -346,7 +330,7 @@
                     document.getElementById('properties-desc').innerText = plant.สรรพคุณ || 'ไม่มีข้อมูล';
                     if (plant.รูปภาพ) document.getElementById('plant-img').src = plant.รูปภาพ;
                 } else {
-                    document.getElementById('loading').innerHTML = '<p class="text-rose-500 font-semibold text-xs">ไม่พบข้อมูลพรรณไม้รหัสนี้</p><button onclick="switchToScannerView()" class="mt-2 bg-emerald-600 text-white px-3 py-1 rounded-lg text-xs">กลับไปสแกนใหม่</button>';
+                    document.getElementById('loading').innerHTML = '<p class="text-rose-500 font-semibold text-xs">ไม่พบข้อมูลพรรณไม้รหัสนี้</p><button onclick="switchToScannerView()" class="mt-2 bg-emerald-600 text-white px-3 py-1 rounded-xl text-xs">กลับไปสแกนใหม่</button>';
                     document.getElementById('loading').style.display = 'block';
                 }
             });
