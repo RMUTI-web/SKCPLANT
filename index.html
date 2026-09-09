@@ -5,17 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>SKC-Plant</title>
     
+    <!-- PWA / Web App Settings for iOS & Android -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="SKC-Plant">
+    <meta name="application-name" content="SKC-Plant">
     <meta name="theme-color" content="#022c22">
 
     <!-- Favicon & Web App Icons -->
-    <link rel="icon" type="image/png" href="LOGO-site.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="LOGO-site.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="LOGO-site.png">
     <link rel="apple-touch-icon" href="LOGO-site.png">
     <link rel="apple-touch-icon" sizes="152x152" href="LOGO-site.png">
     <link rel="apple-touch-icon" sizes="180x180" href="LOGO-site.png">
     <link rel="apple-touch-icon" sizes="167x167" href="LOGO-site.png">
+    <link rel="apple-touch-icon-precomposed" href="LOGO-site.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
@@ -100,7 +104,9 @@
         <!-- Header / Admin Trigger -->
         <div class="flex items-center justify-between px-1 pt-3 pb-2 w-full shrink-0">
             <div class="flex items-center gap-2.5">
-                <img src="LOGO-site.png" alt="Logo" class="w-8 h-8 rounded-full object-cover border border-emerald-500/20 shrink-0" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2310b981\' stroke-width=\'2\'><path d=\'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\'/></svg>';">
+                <div class="w-9 h-9 rounded-full bg-white p-1 flex items-center justify-center border border-emerald-500/30 shadow-sm shrink-0">
+                    <img src="LOGO-site.png" alt="Logo" class="w-full h-full object-contain">
+                </div>
                 <div>
                     <h1 class="text-xs font-bold tracking-wider text-slate-100 uppercase leading-tight">SKC-Plant</h1>
                     <p class="text-[10px] text-slate-400 leading-tight">ระบบศึกษาข้อมูลพรรณไม้ดิจิทัล</p>
