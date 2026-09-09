@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SKC Botanical Garden</title>
+    <title>SKC-Plant</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#022c22">
-
-    <link rel="icon" type="LOGO-site" href="LOGO-site.png">
+<!-- Favicon & Web App Icons -->
+    <link rel="icon" type="image/png" href="LOGO-site.png">
+    <link rel="apple-touch-icon" href="LOGO-site.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="LOGO-site.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
@@ -74,6 +76,8 @@
         .safe-area-container {
             padding-top: max(1rem, env(safe-area-inset-top));
             padding-bottom: max(1rem, env(safe-area-inset-bottom));
+            padding-left: max(1rem, env(safe-area-inset-left));
+            padding-right: max(1rem, env(safe-area-inset-right));
         }
     </style>
 </head>
@@ -88,22 +92,21 @@
 
     <main class="w-full max-w-md h-[100dvh] bg-slate-900/90 text-slate-800 flex flex-col relative overflow-hidden shadow-2xl safe-area-container px-4 z-10 border-x border-slate-800/50">
 
-    <!-- Header / Admin Trigger (ปรับเพิ่ม margin และ padding เว้นกล้อง) -->
-    <div class="flex items-center justify-between px-1 pt-3 pb-2 w-full shrink-0">
-        <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-xs shrink-0">🌿</div>
-            <div>
-                <h1 class="text-xs font-bold tracking-wider text-slate-100 uppercase leading-tight">SKC BOTANICAL</h1>
-                <p class="text-[10px] text-slate-400 leading-tight">ระบบคลังข้อมูลพรรณไม้ดิจิทัล</p>
+        <!-- Header / Admin Trigger -->
+        <div class="flex items-center justify-between px-1 pt-3 pb-2 w-full shrink-0">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-xs shrink-0">🌿</div>
+                <div>
+                    <h1 class="text-xs font-bold tracking-wider text-slate-100 uppercase leading-tight">SKC-Plant</h1>
+                    <p class="text-[10px] text-slate-400 leading-tight">ระบบศึกษาข้อมูลพรรณไม้ดิจิทัล</p>
+                </div>
             </div>
+            <button onclick="toggleAdminModal()" class="w-9 h-9 bg-slate-800/90 hover:bg-slate-700 text-slate-200 rounded-full shadow-lg border border-slate-700/60 flex items-center justify-center active:scale-95 transition text-xs shrink-0" title="สลับโหมดแอดมิน">
+                🔐
+            </button>
         </div>
-        <button onclick="toggleAdminModal()" class="w-9 h-9 bg-slate-800/90 hover:bg-slate-700 text-slate-200 rounded-full shadow-lg border border-slate-700/60 flex items-center justify-center active:scale-95 transition text-xs shrink-0" title="สลับโหมดแอดมิน">
-            🔐
-        </button>
-    </div>
 
-    <div class="flex-1 w-full flex flex-col justify-center items-center min-h-0 overflow-y-auto no-scrollbar relative py-2">
-        <!-- เนื้อหาภายใน (scanner-view, user-view, admin-view) เหมือนเดิม -->
+        <div class="flex-1 w-full flex flex-col justify-center items-center min-h-0 overflow-y-auto no-scrollbar relative py-2">
 
             <!-- ==================== 1. SCANNER VIEW ==================== -->
             <section id="scanner-view" class="w-full flex flex-col items-center justify-center animate-fade-in my-auto">
@@ -225,21 +228,21 @@
             <div class="text-center space-y-1">
                 <div class="w-10 h-10 bg-emerald-100 text-emerald-800 rounded-2xl flex items-center justify-center mx-auto text-base">🔐</div>
                 <h2 class="text-base font-bold text-slate-900">ยืนยันตัวตนแอดมิน</h2>
-                <p class="text-[10px] text-slate-400">ป้อนข้อมูลเพื่อเข้าสู่ระบบจัดการ</p>
+                <p class="text-[11px] text-slate-600 font-medium">ป้อนข้อมูลเพื่อเข้าสู่ระบบจัดการ</p>
             </div>
             
             <form onsubmit="event.preventDefault(); handleLogin();" class="space-y-3" autocomplete="off">
                 <div>
-                    <label class="text-[10px] font-semibold uppercase tracking-wider text-slate-500">อีเมล</label>
-                    <input type="email" id="login-email" class="w-full p-2.5 bg-white/70 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 mt-1">
+                    <label class="text-[11px] font-semibold uppercase tracking-wider text-slate-700">อีเมล</label>
+                    <input type="email" id="login-email" value="" autocomplete="off" placeholder="example@email.com" class="w-full p-2.5 bg-white border border-slate-300 text-slate-900 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 mt-1 shadow-sm">
                 </div>
                 <div>
-                    <label class="text-[10px] font-semibold uppercase tracking-wider text-slate-500">รหัสผ่าน</label>
-                    <input type="password" id="login-pass" class="w-full p-2.5 bg-white/70 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 mt-1">
+                    <label class="text-[11px] font-semibold uppercase tracking-wider text-slate-700">รหัสผ่าน</label>
+                    <input type="password" id="login-pass" value="" autocomplete="new-password" placeholder="••••••••" class="w-full p-2.5 bg-white border border-slate-300 text-slate-900 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 mt-1 shadow-sm">
                 </div>
-                <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 rounded-xl font-medium text-xs transition shadow-md shadow-emerald-900/10">เข้าสู่ระบบ</button>
-                <p id="login-error" class="text-rose-500 text-[10px] text-center hidden font-medium">อีเมลหรือรหัสผ่านไม่ถูกต้อง</p>
-                <button type="button" onclick="toggleAdminModal()" class="w-full text-slate-400 text-[11px] text-center pt-1">ยกเลิก</button>
+                <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 rounded-xl font-medium text-xs transition shadow-md shadow-emerald-900/10 active:scale-95">เข้าสู่ระบบ</button>
+                <p id="login-error" class="text-rose-600 text-[10px] text-center hidden font-semibold">อีเมลหรือรหัสผ่านไม่ถูกต้อง</p>
+                <button type="button" onclick="toggleAdminModal()" class="w-full text-slate-600 hover:text-slate-900 text-xs font-medium text-center pt-1 transition">ยกเลิก</button>
             </form>
         </div>
     </div>
@@ -291,7 +294,6 @@
 
     <!-- SCRIPT -->
     <script>
-        // ⚠️ นำ Web App URL ที่ลงท้ายด้วย /exec จาก Google Apps Script มาใส่ตรงนี้
         const API_URL = "https://script.google.com/macros/s/AKfycbwEA2RQ8ouqr3WBkkCHkxgdJNj6iy6J7KqYrBmCLiItEmuWX4rt2wPAuhSNMhADOtsldQ/exec";
         
         let plantsList = [];
@@ -418,6 +420,9 @@
             if (isAdminLoggedIn) {
                 switchToAdminView();
             } else {
+                document.getElementById('login-email').value = '';
+                document.getElementById('login-pass').value = '';
+                document.getElementById('login-error').classList.add('hidden');
                 document.getElementById('login-modal').classList.toggle('hidden');
             }
         }
