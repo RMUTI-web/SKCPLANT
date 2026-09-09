@@ -1,1447 +1,528 @@
 <!DOCTYPE html>
-<html lang="th" class="dark">
+<html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>อพ.สธ. - SKCPlant</title>
-
-  <!-- Favicon & PWA -->
-  <link rel="icon" type="image/png" sizes="32x32" href="LOGO-site.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="LOGO-site.png">
-  <link rel="manifest" href="manifest.json">
-
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#065f46">
-
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class'
-    }
-  </script>
-  <!-- Libraries -->
-  <script src="https://unpkg.com/html5-qrcode"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/dist/xlsx.full.min.js"></script>
-  <!-- SweetAlert2 -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SKC-Plant - ศึกษาพรรณไม้</title>
+    <link rel="icon" type="LOGO-site" href="LOGO-site.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style> 
+        body { font-family: 'Sarabun', sans-serif; } 
+        .animate-fade-in { animation: fadeIn 0.4s ease-in-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
-<body id="app-body" class="min-h-[100svh] p-3 sm:p-6 font-sans flex items-center justify-center transition-all duration-700 bg-cover bg-center relative overflow-x-hidden">
-
-  <!-- Background Overlay for Readability -->
-  <div class="absolute inset-0 bg-gradient-to-br from-emerald-950/85 via-teal-950/80 to-slate-950/90 dark:from-slate-950/95 dark:via-gray-950/90 dark:to-emerald-950/95 backdrop-blur-[4px] transition-colors duration-500"></div>
-
-  <!-- Main Container Card -->
-  <div class="w-full max-w-md bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl rounded-[2.2rem] shadow-[0_15px_40px_rgba(0,0,0,0.3)] overflow-hidden p-4 sm:p-6 text-gray-800 dark:text-slate-100 relative border border-white/20 dark:border-slate-800/80 transition-all duration-300 z-10 my-auto">
-    
-    <!-- Top Bar: Admin Status & Theme/Settings Buttons -->
-    <div class="flex items-center justify-between mb-2 z-20">
-      <div>
-        <div id="admin-status-badge" class="hidden bg-amber-500/15 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 text-[11px] px-3 py-1.5 rounded-2xl font-bold inline-flex items-center gap-1.5 border border-amber-300/40 dark:border-amber-700/50 shadow-sm backdrop-blur-md">
-          👑 Admin Active
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        <button onclick="toggleTheme()" class="p-2.5 rounded-2xl bg-white/80 dark:bg-slate-800/90 hover:bg-emerald-50 dark:hover:bg-slate-700 text-gray-700 dark:text-yellow-400 transition-all duration-200 cursor-pointer shadow-sm active:scale-95 border border-white/30 dark:border-slate-700" title="เปลี่ยนโหมดธีม">
-          <span id="theme-icon" class="text-base">🌙</span>
-        </button>
-        <button onclick="openSettings()" class="p-2.5 rounded-2xl bg-white/80 dark:bg-slate-800/90 hover:bg-emerald-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 transition-all duration-200 cursor-pointer shadow-sm active:scale-95 border border-white/30 dark:border-slate-700" title="ตั้งค่า / Settings">
-          ⚙️
-        </button>
-      </div>
-    </div>
-
-    <!-- Header, Live Clock & Weather Widget -->
-    <div class="text-center mb-5 mt-1 px-2">
-      <div class="text-[11px] font-semibold tracking-wide text-emerald-800 dark:text-emerald-400 bg-white/70 dark:bg-slate-800/80 py-1.5 px-3 rounded-2xl inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 mb-2.5 shadow-sm border border-emerald-100/50 dark:border-slate-700/80 backdrop-blur-md">
-        <span id="live-clock">🕒 กำลังโหลด...</span>
-        <span class="text-emerald-400 dark:text-slate-600">|</span>
-        <span id="weather-info">📍 กำลังโหลดสภาพอากาศ...</span>
-      </div>
-      <h1 id="txt-title" class="text-lg sm:text-2xl font-black tracking-tight text-emerald-900 dark:text-emerald-400 mb-1 drop-shadow-sm">🌳 สแกน QR Code</h1>
-      <p id="txt-subtitle" class="text-xs text-gray-600 dark:text-slate-400 leading-relaxed font-medium">สแกน QR Code บนป้ายต้นไม้เพื่อดูข้อมูลพรรณไม้</p>
-    </div>
-
-    <!-- Scanner View -->
-    <div id="scanner-container" class="space-y-3.5">
-      <div id="reader" class="rounded-2xl overflow-hidden border-3 border-emerald-500/80 dark:border-emerald-600/80 shadow-lg bg-black min-h-[220px]"></div>
-      
-      <div class="flex gap-2">
-        <button id="btn-toggle-cam" onclick="toggleCameraState()" class="w-full py-3.5 bg-red-500 hover:bg-red-600 text-white font-bold text-xs rounded-2xl shadow-md transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]">
-          🛑 ปิดกล้องสแกน
-        </button>
-      </div>
-
-      <p id="loading-text" class="hidden text-center text-emerald-700 dark:text-emerald-400 font-semibold animate-pulse text-xs py-1">กำลังค้นหาข้อมูลพรรณไม้...</p>
-    </div>
-    
-    <!-- Display Plant Detail Card -->
-    <div id="result-card" class="hidden space-y-3.5 max-h-[70svh] overflow-y-auto pr-1 custom-scrollbar">
-      
-      <div id="admin-back-btn-container" class="hidden">
-        <button onclick="openAdminDatabaseModal()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-md transition-all duration-200 cursor-pointer text-xs flex items-center justify-center gap-2 active:scale-[0.98]">
-          ⬅️ กลับไปยังหน้าจัดการข้อมูลพรรณไม้
-        </button>
-      </div>
-
-      <div class="relative group">
-        <img id="tree-img" class="w-full h-48 sm:h-56 object-cover rounded-2xl shadow-md border border-white/40 dark:border-slate-800 bg-gray-100 dark:bg-slate-800" src="" alt="รูปต้นไม้">
-        <span id="tree-id-badge" class="absolute top-2.5 right-2.5 bg-black/75 backdrop-blur-md text-white text-xs px-3 py-1 rounded-full font-mono shadow-md border border-white/15"></span>
-      </div>
-      
-      <div class="bg-white/80 dark:bg-slate-800/90 p-4 rounded-2xl border border-white/50 dark:border-slate-700/80 space-y-2 text-xs sm:text-sm shadow-sm backdrop-blur-md">
-        <div class="flex justify-between items-center">
-          <span id="tree-no" class="text-[11px] font-bold text-gray-500 dark:text-slate-400">ลำดับ: -</span>
-          <span id="tree-family" class="text-[11px] font-bold bg-emerald-100/90 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-200/50 dark:border-emerald-700/40"></span>
-        </div>
-        <h2 id="tree-plant-name" class="text-lg sm:text-xl font-black text-emerald-950 dark:text-emerald-400"></h2>
-        <p class="text-gray-700 dark:text-slate-200 text-xs"><b id="lbl-local-name" class="text-emerald-800 dark:text-emerald-300">ชื่อท้องถิ่น:</b> <span id="tree-local-name"></span></p>
-        <p class="text-gray-600 dark:text-slate-400 italic text-xs"><b id="lbl-science-name" class="text-emerald-700 dark:text-emerald-400">ชื่อวิทยาศาสตร์:</b> <span id="tree-science"></span></p>
-
-        <hr class="border-emerald-200/50 dark:border-slate-700/60 my-2">
-
-        <div class="space-y-2 text-xs">
-          <div class="bg-white/90 dark:bg-slate-900/70 p-2.5 rounded-xl border border-emerald-100/40 dark:border-slate-800 shadow-sm">
-            <b class="text-emerald-800 dark:text-emerald-300 block mb-0.5 font-bold">🪵 ลักษณะลำต้น</b>
-            <p id="tree-stem" class="text-gray-700 dark:text-slate-300 leading-relaxed"></p>
-          </div>
-          <div class="bg-white/90 dark:bg-slate-900/70 p-2.5 rounded-xl border border-emerald-100/40 dark:border-slate-800 shadow-sm">
-            <b class="text-emerald-800 dark:text-emerald-300 block mb-0.5 font-bold">🍃 ลักษณะใบ</b>
-            <p id="tree-leaf" class="text-gray-700 dark:text-slate-300 leading-relaxed"></p>
-          </div>
-          <div class="bg-white/90 dark:bg-slate-900/70 p-2.5 rounded-xl border border-emerald-100/40 dark:border-slate-800 shadow-sm">
-            <b class="text-emerald-800 dark:text-emerald-300 block mb-0.5 font-bold">✨ คุณสมบัติ / สรรพคุณ</b>
-            <p id="tree-properties" class="text-gray-700 dark:text-slate-300 leading-relaxed"></p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Admin Actions for Current Item -->
-      <div id="admin-actions-group" class="hidden grid grid-cols-2 gap-2">
-        <button onclick="openEditForm()" class="py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl shadow-md transition-all duration-200 cursor-pointer text-xs flex items-center justify-center gap-1.5 active:scale-[0.98]">
-          ✏️ แก้ไขข้อมูล
-        </button>
-        <button onclick="generateQRCodeForCurrent()" class="py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-md transition-all duration-200 cursor-pointer text-xs flex items-center justify-center gap-1.5 active:scale-[0.98]">
-          🖨️ พิมพ์ QR Code
-        </button>
-      </div>
-
-      <!-- Navigation Arrows & Scan Button -->
-      <div id="nav-container" class="grid grid-cols-1 gap-2 pt-0.5">
-        <button id="btn-prev" onclick="prevTree()" class="hidden py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-2xl shadow-md transition-all duration-200 cursor-pointer text-sm flex items-center justify-center active:scale-[0.98]" title="ต้นก่อนหน้า">
-          ◀
-        </button>
-        <button onclick="startScan()" class="py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-md transition-all duration-200 cursor-pointer text-xs flex items-center justify-center gap-1.5 active:scale-[0.98]" title="สแกนกล้อง">
-          📷 สแกน QR Code เพิ่มเติม
-        </button>
-        <button id="btn-next" onclick="nextTree()" class="hidden py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-2xl shadow-md transition-all duration-200 cursor-pointer text-sm flex items-center justify-center active:scale-[0.98]" title="ต้นถัดไป">
-          ▶
-        </button>
-      </div>
-    </div>
-
-    <!-- Admin Edit Form Card -->
-    <div id="admin-edit-card" class="hidden space-y-3 bg-amber-50/90 dark:bg-amber-950/40 p-4 rounded-2xl border border-amber-300/60 dark:border-amber-800/40 max-h-[70svh] overflow-y-auto backdrop-blur-md shadow-sm">
-      <div class="flex justify-between items-center border-b pb-2 border-amber-200 dark:border-amber-800/40">
-        <h3 id="edit-form-title" class="font-extrabold text-amber-900 dark:text-amber-400 text-xs sm:text-sm">✏️ แก้ไขข้อมูลพรรณไม้</h3>
-        <span id="edit-tree-id" class="text-[11px] font-mono bg-amber-200/90 dark:bg-amber-900/80 text-amber-950 dark:text-amber-200 px-2 py-0.5 rounded-lg font-bold"></span>
-      </div>
-
-      <div class="space-y-2.5 text-xs">
-        <div id="container-tree-id-input" class="hidden">
-          <label class="block font-bold text-gray-700 dark:text-slate-300 mb-1">รหัสต้นไม้ (เช่น SKC-030)</label>
-          <input type="text" id="input-new-tree-id" class="w-full p-3 border rounded-xl bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-amber-500 shadow-sm text-sm">
-        </div>
-        <div>
-          <label class="block font-bold text-gray-700 dark:text-slate-300 mb-1">ลำดับที่</label>
-          <input type="text" id="edit-no" class="w-full p-3 border rounded-xl bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-amber-500 shadow-sm text-sm">
-        </div>
-        <div>
-          <label class="block font-bold text-gray-700 dark:text-slate-300 mb-1">ชื่อพรรณไม้</label>
-          <input type="text" id="edit-plant-name" class="w-full p-3 border rounded-xl bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-amber-500 shadow-sm text-sm">
-        </div>
-        <div>
-          <label class="block font-bold text-gray-700 dark:text-slate-300 mb-1">ชื่อท้องถิ่น</label>
-          <input type="text" id="edit-local-name" class="w-full p-3 border rounded-xl bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-amber-500 shadow-sm text-sm">
-        </div>
-        <div>
-          <label class="block font-bold text-gray-700 dark:text-slate-300 mb-1">ชื่อวิทยาศาสตร์</label>
-          <input type="text" id="edit-science-name" class="w-full p-3 border rounded-xl bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-amber-500 shadow-sm text-sm">
-        </div>
-        <div>
-          <label class="block font-bold text-gray-700 dark:text-slate-300 mb-1">ชื่อวงศ์</label>
-          <input type="text" id="edit-family-name" class="w-full p-3 border rounded-xl bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-amber-500 shadow-sm text-sm">
-        </div>
-        <div>
-          <label class="block font-bold text-gray-700 dark:text-slate-300 mb-1">🪵 ลักษณะลำต้น</label>
-          <textarea id="edit-stem-info" rows="2" class="w-full p-3 border rounded-xl bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-amber-500 shadow-sm text-sm"></textarea>
-        </div>
-        <div>
-          <label class="block font-bold text-gray-700 dark:text-slate-300 mb-1">🍃 ลักษณะใบ</label>
-          <textarea id="edit-leaf-info" rows="2" class="w-full p-3 border rounded-xl bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-amber-500 shadow-sm text-sm"></textarea>
-        </div>
-        <div>
-          <label class="block font-bold text-gray-700 dark:text-slate-300 mb-1">✨ คุณสมบัติ / สรรพคุณ</label>
-          <textarea id="edit-properties-info" rows="2" class="w-full p-3 border rounded-xl bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-amber-500 shadow-sm text-sm"></textarea>
-        </div>
-
-        <div class="p-3 bg-white/90 dark:bg-slate-800 rounded-xl border border-amber-200 dark:border-slate-700 space-y-2 shadow-sm">
-          <label class="block font-bold text-emerald-800 dark:text-emerald-400">🖼️ แนบไฟล์รูปภาพพรรณไม้</label>
-          <input type="file" id="edit-image-file" accept="image/*" class="w-full text-xs text-slate-600 file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-100 file:text-emerald-800 hover:file:bg-emerald-200 cursor-pointer" onchange="previewSelectedImage(this)">
-          <div id="image-preview-container" class="hidden relative mt-2">
-            <img id="image-preview" src="" class="w-full h-28 object-cover rounded-lg border shadow-sm">
-            <span class="text-[10px] text-gray-400 block mt-1">ตัวอย่างรูปภาพที่จะใช้</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex gap-2 pt-2">
-        <button onclick="saveTreeData()" class="flex-1 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-md transition-all duration-200 text-xs flex items-center justify-center gap-1.5 active:scale-[0.98]">
-          💾 บันทึก
-        </button>
-        <button id="btn-delete-tree" onclick="deleteCurrentTree()" class="py-3.5 px-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl text-xs shadow-md transition-all duration-200 active:scale-[0.98]">🗑️ ลบ</button>
-        <button onclick="cancelEdit()" class="py-3.5 px-3 bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 text-gray-700 dark:text-slate-200 font-bold rounded-2xl text-xs transition-all duration-200 active:scale-[0.98]">ยกเลิก</button>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Settings Modal -->
-  <div id="settings-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 transition-all duration-300">
-    <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-[2.2rem] p-5 w-full max-w-sm shadow-2xl space-y-4 border border-white/20 dark:border-slate-800 text-gray-800 dark:text-slate-100 max-h-[85svh] overflow-y-auto">
-      
-      <div class="flex justify-between items-center border-b pb-3 border-gray-100 dark:border-slate-800">
-        <h3 id="txt-modal-title" class="font-black text-base text-emerald-900 dark:text-emerald-400">⚙️ ตั้งค่า (Settings)</h3>
-        <button onclick="closeSettings()" class="text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 text-lg font-bold cursor-pointer w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 transition">&times;</button>
-      </div>
-
-      <div class="space-y-1.5">
-        <label class="block text-[11px] font-bold text-gray-400 dark:text-slate-400 uppercase tracking-wider">🌿 วอลเปเปอร์ธรรมชาติ / Nature Wallpaper</label>
-        <button onclick="randomizeWallpaper()" class="w-full py-3 px-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-xs font-bold border border-emerald-200 dark:border-emerald-800/60 transition flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-[0.98]">
-          🎲 สุ่มเปลี่ยนวอลเปเปอร์ใหม่
-        </button>
-      </div>
-
-      <div class="space-y-1.5">
-        <label class="block text-[11px] font-bold text-gray-400 dark:text-slate-400 uppercase tracking-wider">🎨 โหมดการแสดงผล / Theme</label>
-        <div class="grid grid-cols-2 gap-2">
-          <button id="btn-theme-light" onclick="setTheme('light')" class="py-2.5 px-3 rounded-xl border-2 text-xs font-bold transition flex items-center justify-center gap-2 border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-300 hover:border-emerald-500 cursor-pointer">
-            ☀️ Light
-          </button>
-          <button id="btn-theme-dark" onclick="setTheme('dark')" class="py-2.5 px-3 rounded-xl border-2 text-xs font-bold transition flex items-center justify-center gap-2 border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-300 hover:border-emerald-500 cursor-pointer">
-            🌙 Dark
-          </button>
-        </div>
-      </div>
-
-      <div class="space-y-1.5">
-        <label id="lbl-lang-select" class="block text-[11px] font-bold text-gray-400 dark:text-slate-400 uppercase tracking-wider">🌐 เลือกภาษา / Select Language</label>
-        <div class="grid grid-cols-2 gap-2">
-          <button id="btn-lang-th" onclick="setLanguage('th')" class="py-2.5 px-3 rounded-xl border-2 text-xs font-bold transition flex items-center justify-center gap-2 border-emerald-600 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:border-emerald-500 dark:text-emerald-300 cursor-pointer">
-            🇹🇭 ภาษาไทย
-          </button>
-          <button id="btn-lang-en" onclick="setLanguage('en')" class="py-2.5 px-3 rounded-xl border-2 text-xs font-bold transition flex items-center justify-center gap-2 border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-300 hover:border-emerald-500 cursor-pointer">
-            🇬🇧 English
-          </button>
-        </div>
-      </div>
-
-      <hr class="border-gray-100 dark:border-slate-800">
-
-      <div class="space-y-2.5">
-        <label class="block text-[11px] font-bold text-gray-400 dark:text-slate-400 uppercase tracking-wider">🔑 ระบบจัดการผู้ดูแล (Admin)</label>
-        
-        <div id="admin-login-btn-container">
-          <button onclick="showLoginForm()" class="w-full py-3 px-4 rounded-xl border border-gray-200 dark:border-slate-700 text-xs font-bold text-gray-700 dark:text-slate-200 hover:bg-emerald-50 dark:hover:bg-slate-800 flex items-center justify-center gap-2 shadow-sm transition cursor-pointer">
-            🔐 เข้าสู่ระบบแอดมิน
-          </button>
-        </div>
-
-        <div id="admin-login-form" class="hidden space-y-2 bg-gray-50/90 dark:bg-slate-800/60 p-3 rounded-xl border border-gray-200 dark:border-slate-700">
-          <input type="email" id="admin-email" value="" placeholder="อีเมลแอดมิน (Email)" class="w-full p-3 text-sm border rounded-lg bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
-          <input type="password" id="admin-password" value="" placeholder="รหัสผ่าน (Password)" class="w-full p-3 text-sm border rounded-lg bg-white dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
-          <button onclick="handleAdminLogin()" class="w-full py-3 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-md transition cursor-pointer">
-            ยืนยันเข้าสู่ระบบ
-          </button>
-        </div>
-
-        <div id="admin-logged-container" class="hidden space-y-2">
-          <button onclick="openAdminDatabaseModal()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
-            🔍 ค้นหา & จัดการฐานข้อมูลพรรณไม้
-          </button>
-
-          <button onclick="exportDatabaseToExcel()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
-            📥 ดาวน์โหลดสำรองข้อมูล (Export Excel)
-          </button>
-
-          <button onclick="handleAdminLogout()" class="w-full py-2.5 px-4 rounded-xl bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 text-xs font-bold border border-red-200 dark:border-red-900/50 transition cursor-pointer">
-            🚪 ออกจากระบบแอดมิน
-          </button>
-        </div>
-      </div>
-
-      <button onclick="closeSettings()" id="btn-close-modal" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white font-bold rounded-2xl shadow-md transition text-xs cursor-pointer">
-        ตกลง / OK
-      </button>
-
-    </div>
-  </div>
-
-  <!-- Admin Database Search/Manage Modal -->
-  <div id="admin-db-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-3 z-50 transition-all duration-300">
-    <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-[2.2rem] p-4.5 w-full max-w-md shadow-2xl space-y-3.5 border border-white/20 dark:border-slate-800 text-gray-800 dark:text-slate-100 max-h-[85svh] flex flex-col">
-      
-      <div class="flex justify-between items-center border-b pb-2.5 border-gray-100 dark:border-slate-800">
-        <h3 class="font-bold text-sm text-indigo-700 dark:text-indigo-400 flex items-center gap-1.5">🔍 ค้นหา & จัดการพรรณไม้</h3>
-        <button onclick="closeAdminDatabaseModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 text-lg font-bold cursor-pointer w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 transition">&times;</button>
-      </div>
-
-      <div class="grid grid-cols-2 gap-2 text-center text-xs">
-        <div class="bg-indigo-50/90 dark:bg-slate-800 p-2 rounded-xl border border-indigo-100 dark:border-slate-700 shadow-sm">
-          <span class="block text-gray-400 dark:text-slate-400 text-[10px] font-semibold">พรรณไม้ทั้งหมด</span>
-          <b id="dash-total-count" class="text-base font-black text-indigo-600 dark:text-indigo-400">0</b> รายการ
-        </div>
-        <div class="bg-emerald-50/90 dark:bg-slate-800 p-2 rounded-xl border border-emerald-100 dark:border-slate-700 shadow-sm">
-          <span class="block text-gray-400 dark:text-slate-400 text-[10px] font-semibold">จำนวนวงศ์</span>
-          <b id="dash-family-count" class="text-base font-black text-emerald-600 dark:text-emerald-400">0</b> วงศ์
-        </div>
-      </div>
-
-      <div class="flex gap-2">
-        <input type="text" id="db-search-input" oninput="filterAdminDatabase()" placeholder="🔎 พิมพ์รหัส, ชื่อต้นไม้, หรือสรรพคุณ..." class="flex-1 p-3 text-sm border rounded-xl bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm">
-        <button onclick="openAddNewTreeForm()" class="px-3.5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shrink-0 flex items-center gap-1 shadow-md transition cursor-pointer">
-          ➕ เพิ่มใหม่
-        </button>
-      </div>
-
-      <div id="db-list-container" class="flex-1 overflow-y-auto space-y-2 pr-1 min-h-[140px]">
-        <p class="text-center text-xs text-gray-400 py-8 font-medium">กำลังโหลดข้อมูล...</p>
-      </div>
-
-      <button onclick="closeAdminDatabaseModal()" class="w-full py-3 bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 text-gray-800 dark:text-slate-200 font-bold rounded-xl text-xs transition cursor-pointer">
-        ปิดหน้าต่าง
-      </button>
-    </div>
-  </div>
-
-  <!-- QR Modal -->
-  <div id="qr-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 transition-all duration-300">
-    <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-[2.2rem] p-5 w-full max-w-xs shadow-2xl text-center space-y-3.5 border border-white/20 dark:border-slate-800 text-gray-800 dark:text-slate-100">
-      <h3 class="font-extrabold text-sm text-emerald-800 dark:text-emerald-400">🖨️ QR Code พรรณไม้</h3>
-      <p id="qr-target-id" class="text-xs text-gray-500 dark:text-slate-400 font-mono font-medium"></p>
-      
-      <div class="flex justify-center p-3 bg-white rounded-2xl shadow-inner border border-gray-100 dark:border-slate-800" id="qrcode-canvas"></div>
-      
-      <div class="flex gap-2">
-        <button onclick="printQRCode()" class="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition cursor-pointer">
-          🖨️ พิมพ์ / สั่งปริ้น
-        </button>
-        <button onclick="closeQRModal()" class="py-3 px-3.5 bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 text-gray-700 dark:text-slate-200 font-bold text-xs rounded-xl transition cursor-pointer">
-          ปิด
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <style>
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 4px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: rgba(0,0,0,0.03);
-      border-radius: 10px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: rgba(16, 185, 129, 0.3);
-      border-radius: 10px;
-    }
-  </style>
-
-  <script>
-    const natureWallpapers = [
-      "https://images.unsplash.com/photo-1511497584788-876761192669?auto=format&fit=crop&w=1920&q=80",
-      "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1920&q=80",
-      "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1920&q=80",
-      "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=1920&q=80",
-      "https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=1920&q=80",
-      "https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=1920&q=80"
-    ];
-
-    function randomizeWallpaper() {
-      const randomIndex = Math.floor(Math.random() * natureWallpapers.length);
-      const selectedBg = natureWallpapers[randomIndex];
-      const bodyEl = document.getElementById('app-body');
-      bodyEl.style.backgroundImage = `url('${selectedBg}')`;
-      localStorage.setItem('skc_current_wallpaper', selectedBg);
-    }
-
-    const ADMIN_CREDENTIALS = {
-      email: "admin@tree.com",
-      password: "123456"
-    };
-
-    // ฐานข้อมูลพรรณไม้มาตรฐาน (ปรับคีย์ให้ตรงกันทั้งหมดเรียบร้อยแล้ว)
-    const initialPlantData = [
-      {
-        "no": "1",
-        "tree_id": "plant-1-0001",
-        "plant_name": "ประดู่",
-        "local_name": "ประดู่",
-        "scientific_name": "Pterocarpus indicus Willd. (FABACEAE)",
-        "family_name": "FABACEAE",
-        "stem_info": "ไม้ยืนต้นขนาดใหญ่ สูง 15-30 เมตร เปลือกต้นสีน้ำตาลดำ แตกเป็นร่องลึกตามยาว",
-        "leaf_info": "ใบประกอบแบบขนนกปลายเดียว เรียงสลับ ใบย่อยรูปไข่หรือรูปรี ปลายแหลม โคนมน",
-        "properties_info": "แก่นไม้ใช้ต้มแก้ไข้ ยอดอ่อนทานเป็นผักสด เนื้อไม้แข็งแรงใช้ทำเครื่องเรือน"
-      },
-      {
-        "no": "2",
-        "tree_id": "plant-1-0002",
-        "plant_name": "นมน้อย",
-        "local_name": "ต้นหมากน้ำเต้า",
-        "scientific_name": "Polyalthia evecta (Pierre) Finet & Gagnep. (Annonaceae)",
-        "family_name": "Annonaceae",
-        "stem_info": "ไม้พุ่มขนาดเล็ก สูง 0.5-1 เมตร ลำต้นตั้งตรง เปลือกเรียบสีน้ำตาลเทา",
-        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปรีหรือรูปขอบขนาน ผิวใบเรียบ",
-        "properties_info": "รากต้มดื่มแก้พิษ แก้ไข้ และขับลม"
-      },
-      {
-        "no": "3",
-        "tree_id": "plant-1-0003",
-        "plant_name": "มะกอกเลื่อม",
-        "local_name": "ต้นหมากกอกเลื่อม",
-        "scientific_name": "Canarium subulatum Guillaumin. (BURSERACEAE)",
-        "family_name": "BURSERACEAE",
-        "stem_info": "ไม้ยืนต้นขนาดกลางถึงใหญ่ สูง 10-25 เมตร เปลือกต้นสีเทาเรียบหรือร่อนเป็นแผ่น",
-        "leaf_info": "ใบประกอบแบบขนนกปลายเดี่ยว ขอบใบหยักฟันเลื่อย แผ่นใบหนาเป็นมัน",
-        "properties_info": "ผลสุกรสเปรี้ยวหวานทานได้ เปลือกต้นต้มดื่มแก้ท้องร่วงและใช้ชะล้างบาดแผล"
-      },
-      {
-        "no": "4",
-        "tree_id": "plant-1-0004",
-        "plant_name": "นมควาย",
-        "local_name": "หมากผีผ่วน",
-        "scientific_name": "Uvaria rufa Blume. (ANNONACEAE)",
-        "family_name": "ANNONACEAE",
-        "stem_info": "ไม้เลื้อยเนื้อแข็งหรือไม้พุ่มกึ่งเลื้อย กิ่งก้านมีขนสีน้ำตาลแดงหนาแน่น",
-        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปขอบขนานหรือรูปรี ผิวใบมีขนสั้นนุ่มทั้งสองด้าน",
-        "properties_info": "ผลสุกรสหวานเปรี้ยว แก่นและรากต้มน้ำดื่มแก้ปวดเมื่อย แก้ไข้ และแก้ท้องเสีย"
-      },
-      {
-        "no": "5",
-        "tree_id": "plant-1-0005",
-        "plant_name": "ยอป่า",
-        "local_name": "ต้นยอป่า",
-        "scientific_name": "Morinda coreia Buch.-Ham. (RUBIACEAE)",
-        "family_name": "RUBIACEAE",
-        "stem_info": "ไม้ยืนต้นขนาดเล็กถึงกลาง สูง 5-15 เมตร เปลือกสีน้ำตาลเทา แตกเป็นร่องลึก",
-        "leaf_info": "ใบเดี่ยว ออกตรงข้าม รูปรีหรือรูปขอบขนาน แผ่นใบหนา ผิวใบด้านบนสาก",
-        "properties_info": "แก่นต้มน้ำดื่มแก้อาเจียนและขับลม บำรุงธาตุ ผลแก่อมแก้เจ็บคอ"
-      },
-      {
-        "no": "6",
-        "tree_id": "plant-1-0006",
-        "plant_name": "ต้นขี้มอด",
-        "local_name": "ส้มขี้มอด",
-        "scientific_name": "Dalbergia lanceolaria L.f. var. lakhonensis (LEGUMINOSAE)",
-        "family_name": "LEGUMINOSAE",
-        "stem_info": "ไม้ยืนต้นขนาดกลางถึงใหญ่ สูง 15-25 เมตร เปลือกสีเทาลายเรียบหรือหลุดล่อน",
-        "leaf_info": "ใบประกอบแบบขนนกปลายเดี่ยว ใบย่อยรูปไข่หรือรูปรี เนื้อใบบาง",
-        "properties_info": "เปลือกต้นใช้สมานแผลและแก้ไข้ แก่นใช้บำรุงโลหิตและขับลมในลำไส้"
-      },
-      {
-        "no": "7",
-        "tree_id": "plant-1-0007",
-        "plant_name": "ต้นตะขบป่า",
-        "local_name": "หมากเบน",
-        "scientific_name": "Flacourtia indica (Burm.f.) Merr. (FLACOURTIACEAE)",
-        "family_name": "FLACOURTIACEAE",
-        "stem_info": "ไม้พุ่มหรือไม้ยืนต้นขนาดเล็ก สูง 2-10 เมตร มีหนามแหลมแข็งตามลำต้น",
-        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปไข่หรือรูปรี ขอบใบจักฟันเลื่อย แผ่นใบเรียบหนา",
-        "properties_info": "ผลสุกรับประทานได้ รสหวานเปรี้ยว เปลือกต้นต้มแก้ท้องเสียและท้องร่วง"
-      },
-      {
-        "no": "8",
-        "tree_id": "plant-1-0008",
-        "plant_name": "ติ้วขน",
-        "local_name": "ต้นติ้ว",
-        "scientific_name": "Cratoxylum formosum (Jacq.) Benth. (HYPERICACEAE)",
-        "family_name": "HYPERICACEAE",
-        "stem_info": "ไม้ยืนต้นขนาดเล็กถึงกลาง สูง 8-15 เมตร เปลือกสีน้ำตาลแตกเป็นร่อง ยอดมีขน",
-        "leaf_info": "ใบเดี่ยว ออกตรงข้าม รูปรีหรือรูปรีขอบขนาน หลังใบและท้องใบมีขนนุ่ม",
-        "properties_info": "ยอดอ่อนและใบอ่อนรับประทานเป็นผักสด รสเปรี้ยว ดอกและรากใช้ต้มแก้ไข้"
-      },
-      {
-        "no": "9",
-        "tree_id": "plant-1-0009",
-        "plant_name": "ต้นโมกป่า",
-        "local_name": "ต้นเชือก",
-        "scientific_name": "Wrightia dubia (Sims) Spreng. (APOCYNACEAE)",
-        "family_name": "APOCYNACEAE",
-        "stem_info": "ไม้พุ่มหรือไม้ยืนต้นขนาดเล็ก สูง 2-6 เมตร มียางสีขาว เปลือกสีน้ำตาลอ่อน",
-        "leaf_info": "ใบเดี่ยว ออกตรงข้ามหรือรูปรี ปลายแหลม ผิวใบเรียบ",
-        "properties_info": "รากดื่มน้ำดื่มแก้พิษสัตว์กัดต่อย ดอกช่วยบำรุงธาตุและขับลม เปลือกต้นใช้สมานแผล แก้ท้องร่วง"
-      },
-      {
-        "no": "10",
-        "tree_id": "plant-1-0010",
-        "plant_name": "รกฟ้า",
-        "local_name": "รกฟ้า",
-        "scientific_name": "Terminalia alata Heyne ex Roth. (COMBRETACEAE)",
-        "family_name": "COMBRETACEAE",
-        "stem_info": "ไม้ยืนต้นขนาดใหญ่ สูง 20-30 เมตร เปลือกสีดำแตกเป็นร่องลึกคล้ายก้อนเกล็ด",
-        "leaf_info": "ใบเดี่ยว ออกตรงข้าม รูปขอบขนานหรือรูปรี แผ่นใบหนาคล้ายหนัง",
-        "properties_info": "เปลือกต้นใช้สมานแผล แก้ท้องร่วง"
-      },
-      {
-        "no": "11",
-        "tree_id": "plant-1-0011",
-        "plant_name": "คิ้วเกลี้ยง",
-        "local_name": "คิ้วหม่น / คิ้วหนาม",
-        "scientific_name": "Cratoxylum cochinchinense (Lour.) Blume (Hypericaceae)",
-        "family_name": "Hypericaceae",
-        "stem_info": "ไม้ยืนต้นขนาดเล็กถึงกลาง สูง 10-18 เมตร เปลือกสีน้ำตาลแดง เรียบหรือร่อน",
-        "leaf_info": "ใบเดี่ยว ออกตรงข้าม รูปรีหรือรูปหอก ผิวใบเรียบเกลี้ยง ไม่มีขน ยอดสีแดง",
-        "properties_info": "ยอดอ่อนทานเป็นผักสดเครื่องเคียง เปลือกและรากใช้แก้ท้องร่วงและสมานแผล"
-      },
-      {
-        "no": "12",
-        "tree_id": "plant-1-0013",
-        "plant_name": "พลวง",
-        "local_name": "กุง",
-        "scientific_name": "Dipterocarpus tuberculatus Roxb. (Dipterocarpaceae)",
-        "family_name": "Dipterocarpaceae",
-        "stem_info": "ไม้ยืนต้นขนาดใหญ่ สูง 15-30 เมตร เปลือกสีน้ำตาลหนา แตกเป็นร่องลึกตามยาว",
-        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปไข่กว้างขนาดใหญ่ โคนรูปหัวใจ แผ่นใบหนาแข็ง",
-        "properties_info": "ชันไม้ใช้ทากันน้ำรั่วซึม ใบใช้ห่อของหรือมุงหลังคา เปลือกใช้สมานแผล"
-      },
-      {
-        "no": "13",
-        "tree_id": "plant-1-0014",
-        "plant_name": "พลองเหมือด",
-        "local_name": "เหมือดลด",
-        "scientific_name": "Memecylon edule Roxb. (MELASTOMATACEAE)",
-        "family_name": "MELASTOMATACEAE",
-        "stem_info": "ไม้พุ่มหรือไม้ยืนต้นขนาดเล็ก สูง 3-8 เมตร เปลือกสีน้ำตาลเทาร่อนเป็นแผ่น",
-        "leaf_info": "ใบเดี่ยว ออกตรงข้าม รูปรีหรือรูปขอบขนาน แผ่นใบหนาเรียบแข็งเป็นมัน",
-        "properties_info": "ใบและรากใช้ต้มต้านการอักเสบ แก้ไข้ บำรุงเลือด ผลสุกรับประทานได้"
-      },
-      {
-        "no": "14",
-        "tree_id": "plant-1-0015",
-        "plant_name": "ข่อย",
-        "local_name": "ต้นข่อย",
-        "scientific_name": "Streblus asper Lour. (MORACEAE)",
-        "family_name": "MORACEAE",
-        "stem_info": "ไม้ยืนต้นขนาดเล็กถึงกลาง สูง 5-15 เมตร เปลือกสีเทาขรุขระ มียางสีขาว",
-        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปไข่กลับ สากมือทั้งสองด้าน ขอบใบจักฟันเลื่อย",
-        "properties_info": "กิ่งใช้ถูฟันแก้ปวดฟัน เปลือกใช้รักษาโรคผิวหนังและแก้ท้องร่วง"
-      },
-      {
-        "no": "15",
-        "tree_id": "plant-1-0016",
-        "plant_name": "ตูมกา",
-        "local_name": "ตูมกาขาว",
-        "scientific_name": "Strychnos nux-blanda A.W.Hill (Strychnaceae)",
-        "family_name": "Strychnaceae",
-        "stem_info": "ไม้ยืนต้นขนาดกลาง สูง 8-15 เมตร เปลือกสีน้ำตาลเทา เรียบหรือแตกเป็นสเกล",
-        "leaf_info": "ใบเดี่ยว ออกตรงข้าม รูปไข่กว้าง ปลายแหลม มีเส้นใบ 3-5 เส้นออกจากโคน",
-        "properties_info": "ตำรับยาพื้นบ้านใช้ผลและรากแก้พิษปวดเมื่อย"
-      },
-      {
-        "no": "16",
-        "tree_id": "plant-1-0017",
-        "plant_name": "ตะโก",
-        "local_name": "ต้นโก / ตะโกนา",
-        "scientific_name": "Diospyros rhodocalyx Kurz (EBENACEAE)",
-        "family_name": "EBENACEAE",
-        "stem_info": "ไม้ยืนต้นขนาดกลาง สูง 8-15 เมตร เปลือกสีดำหนา แตกเป็นร่องลึกขรุขระ",
-        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปไข่กลับหรือรูปรี แผ่นใบหนาเรียบแข็ง สีเขียวเข้ม",
-        "properties_info": "เปลือกต้นและผลดิบใช้สมานแผล แก้ท้องเสีย และต้มดื่มบำรุงกำลัง"
-      },
-      {
-        "no": "17",
-        "tree_id": "plant-1-0018",
-        "plant_name": "กวาวเครือแดง",
-        "local_name": "จานเครือ",
-        "scientific_name": "Butea superba Roxb. (Leguminosae)",
-        "family_name": "Leguminosae",
-        "stem_info": "ไม้เถาเลื้อยขนาดใหญ่ พันต้นไม้อื่น ลำต้นมียางสีแดง",
-        "leaf_info": "ใบประกอบมีใบย่อย 3 ใบ รูปไข่กว้างหรือรูปขนมเปียกปูน แผ่นใบใหญ่หนา",
-        "properties_info": "หัวใต้ดินใช้บำรุงร่างกาย บำรุงกำลัง และเพิ่มการไหลเวียนโลหิต"
-      },
-      {
-        "no": "18",
-        "tree_id": "plant-1-0019",
-        "plant_name": "กระโดน",
-        "local_name": "กระโดนบก",
-        "scientific_name": "Careya sphaerica Roxb. (Lecythidaceae)",
-        "family_name": "Lecythidaceae",
-        "stem_info": "ไม้ยืนต้นขนาดกลาง สูง 10-20 เมตร เปลือกสีน้ำตาลดำ แตกเป็นปุ่มขรุขระ",
-        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปไข่กลับขนาดใหญ่ ปลายใบมน ขอบใบหยัก",
-        "properties_info": "ดอกและยอดอ่อนใช้รับประทานเป็นผักสด รสฝาดมัน เปลือกใช้สมานแผล"
-      },
-      {
-        "no": "19",
-        "tree_id": "plant-1-0020",
-        "plant_name": "อุโลก",
-        "local_name": "ต้นส้มกบ",
-        "scientific_name": "Hymenodictyon orixense (Roxb.) Mabb. (Rubiaceae)",
-        "family_name": "Rubiaceae",
-        "stem_info": "ไม้ยืนต้นขนาดใหญ่ สูง 15-25 เมตร เปลือกสีน้ำตาลเทา แตกเป็นร่องตามยาว",
-        "leaf_info": "ใบเดี่ยว ออกตรงข้าม รูปไข่กว้าง มีใบประดับสีขาวหรือครีมโดดเด่น",
-        "properties_info": "เปลือกต้นรสขม ต้มแก้ไข้ แก้เจ็บคอ และช่วยบำรุงธาตุ"
-      },
-      {
-        "no": "20",
-        "tree_id": "plant-1-0021",
-        "plant_name": "พลับพลา",
-        "local_name": "หมากคอม",
-        "scientific_name": "Microcos tomentosa Smith (TILIACEAE)",
-        "family_name": "TILIACEAE",
-        "stem_info": "ไม้ยืนต้นขนาดกลาง สูง 8-15 เมตร กิ่งก้านมีขนสีน้ำตาลหนาแน่น",
-        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปไข่กว้าง ท้องใบมีขนสีดาวนุ่มนวล",
-        "properties_info": "ผลสุกรับประทานได้รสหวาน เปลือกและใบใช้ต้มแก้ไอและขับเสมหะ"
-      },
-      {
-        "no": "21",
-        "tree_id": "plant-1-0022",
-        "plant_name": "รัง",
-        "local_name": "ต้นรัง",
-        "scientific_name": "Shorea siamensis Miq. (Dipterocarpaceae)",
-        "family_name": "Dipterocarpaceae",
-        "stem_info": "ไม้ยืนต้นขนาดกลางถึงใหญ่ สูง 15-25 เมตร เปลือกสีน้ำตาลเทา แตกเป็นร่องลึก",
-        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปไข่กว้าง โคนใบรูปหัวใจ แผ่นใบเรียบหนาแข็ง",
-        "properties_info": "ชันไม้ใช้ทากันน้ำ ย้อมอวน ก่อสร้างบ้านเรือน และใช้สมานแผลแก้ท้องร่วง"
-      },
-      {
-        "no": "22",
-        "tree_id": "plant-1-0023",
-        "plant_name": "มะเกลือ",
-        "local_name": "หมากเกลือ",
-        "scientific_name": "Diospyros mollis Griff. (Ebenaceae)",
-        "family_name": "Ebenaceae",
-        "stem_info": "ไม้ยืนต้นขนาดกลางถึงใหญ่ สูง 10-20 เมตร เปลือกสีดำแตกเป็นร่องสะเก็ด",
-        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปไข่หรือรูปรี ปลายแหลม ใบบางเรียบ สีเขียวเข้ม",
-        "properties_info": "ผลแก่สดใช้เป็นยาขับพยาธิ ย้อมผ้าและไหมให้ได้สีดำสนิท"
-      },
-      {
-        "no": "23",
-        "tree_id": "plant-1-0024",
-        "plant_name": "กระพี้โพรง",
-        "local_name": "ต้นฉนวน",
-        "scientific_name": "Dalbergia nigrescens Kurz (Fabaceae)",
-        "family_name": "Fabaceae",
-        "stem_info": "ไม้ยืนต้นขนาดกลาง สูง 10-18 เมตร เปลือกสีเทาเข้ม ร่อนเป็นแผ่นบาง",
-        "leaf_info": "ใบประกอบแบบขนนกปลายเดี่ยว ใบย่อยรูปไข่หรือรูปรี ผิวใบเรียบ",
-        "properties_info": "เนื้อไม้ใช้ทำเครื่องเรือน ด้ามเครื่องมือ เปลือกและแก่นใช้บำรุงโลหิต"
-      },
-      {
-        "no": "24",
-        "tree_id": "plant-1-0025",
-        "plant_name": "ส้มเสี้ยว",
-        "local_name": "ส้มเสี้ยว",
-        "scientific_name": "Bauhinia malabarica Roxb. (LEGUMINOSAE)",
-        "family_name": "LEGUMINOSAE",
-        "stem_info": "ไม้ยืนต้นขนาดเล็กถึงกลาง สูง 8-15 เมตร เปลือกสีน้ำตาลเทา ร่อนเป็นแผ่น",
-        "leaf_info": "ใบเดี่ยว แฝดคู่ (เว้าลึกตรงปลายคล้ายกับเท้าสัตว์) แผ่นใบกว้าง",
-        "properties_info": "ใบมีรสเปรี้ยว ใช้ปรุงอาหารต้มส้ม แก้ไอ ขับเสมหะ และฟอกโลหิต"
-      },
-      {
-        "no": "25",
-        "tree_id": "plant-1-0026",
-        "plant_name": "ตะคร้อ",
-        "local_name": "หนามคอ้ง",
-        "scientific_name": "Ziziphus cambodiana Pierre (RHAMNACEAE)",
-        "family_name": "RHAMNACEAE",
-        "stem_info": "ไม้พุ่มกึ่งเลื้อย มีหนามแหลมงอตามกิ่งก้าน",
-        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปไข่กว้างหรือรูปวงกลม มีเส้นใบออกจากโคน 3 เส้น",
-        "properties_info": "ผลสุกรสเปรี้ยวหวาน ทานได้ เปลือกและรากต้มแก้ท้องเสีย สมานแผล"
-      },
-      {
-        "no": "26",
-        "tree_id": "plant-1-0027",
-        "plant_name": "เปราะป่า",
-        "local_name": "ดูบหมูบ",
-        "scientific_name": "Kaempferia marginata Carey (Zingiberaceae)",
-        "family_name": "Zingiberaceae",
-        "stem_info": "ไม้ล้มลุกมีหัวใต้ดิน ทรงพุ่มแนบติดพื้นดิน",
-        "leaf_info": "ใบเดี่ยว 2-3 ใบ กางแผ่แนบติดพื้นดิน รูปวงกลม ขอบใบสีแดง",
-        "properties_info": "หัวและเหง้าใช้แก้ท้องอืด ท้องเฟ้อ ขับลม แก้ปวดศีรษะ"
-      },
-      {
-        "no": "27",
-        "tree_id": "plant-1-0028",
-        "plant_name": "ตะคร้อ",
-        "local_name": "หมากคือ",
-        "scientific_name": "Schleichera oleosa (Lour.) Merr. (SAPINDACEAE)",
-        "family_name": "SAPINDACEAE",
-        "stem_info": "ไม้ยืนต้นขนาดใหญ่ สูง 15-25 เมตร เปลือกสีน้ำตาลเทา ร่อนเป็นแผ่น",
-        "leaf_info": "ใบประกอบแบบขนนก ใบย่อยรูปรีหรือรูปขอบขนาน เนื้อใบหนาเป็นมัน",
-        "properties_info": "ผลสุกทานได้รสเปรี้ยวจัด น้ำมันจากเมล็ดใช้บำรุงเส้นผมและผิวหนัง"
-      },
-      {
-        "no": "28",
-        "tree_id": "plant-1-0029",
-        "plant_name": "โมกเครือ",
-        "local_name": "ไส้ตัน",
-        "scientific_name": "Aganosma marginata (Roxb.) G.Don (Apocynaceae)",
-        "family_name": "Apocynaceae",
-        "stem_info": "ไม้เลื้อยเนื้อแข็งขนาดใหญ่ มียางสีขาว เปลือกสีน้ำตาลเข้ม",
-        "leaf_info": "ใบเดี่ยว ออกตรงข้าม รูปรีหรือรูปขอบขนาน แผ่นใบเรียบหนา",
-        "properties_info": "เถาและรากใช้ต้มขับปัสสาวะ แก้โรคไต แก้อาการปวดเมื่อย"
-      },
-      {
-        "no": "29",
-        "tree_id": "plant-1-0030",
-        "plant_name": "เต็ง",
-        "local_name": "ต้นจิก",
-        "scientific_name": "Shorea obtusa Wall. ex A.DC. (Dipterocarpaceae)",
-        "family_name": "Dipterocarpaceae",
-        "stem_info": "ไม้ยืนต้นขนาดกลางถึงใหญ่ สูง 10-25 เมตร เปลือกสีน้ำตาลเข้ม แตกเป็นร่องลึก",
-        "leaf_info": "ใบเดี่ยว เรียงสลับ รูปขอบขนานหรือรูปไข่กลับ ปลายมน โคนมน",
-        "properties_info": "เนื้อไม้แข็งแรงทนทานใช้สร้างบ้าน ทำเสา ชันไม้ใช้สมานแผลและห้ามเลือด"
-      },
-      {
-        "no": "30",
-        "tree_id": "plant-1-0031",
-        "plant_name": "ราชพฤกษ์",
-        "local_name": "คูน / ราชพฤกษ์",
-        "scientific_name": "Cassia fistula L. (FABACEAE)",
-        "family_name": "FABACEAE",
-        "stem_info": "ไม้ยืนต้นขนาดกลาง สูง 10-20 เมตร เปลือกนอกสีเทาเรียบหรือแตกเป็นร่องตื้น",
-        "leaf_info": "ใบประกอบแบบขนนกปลายคู่ เรียงสลับ ใบย่อยรูปไข่หรือรูปรี ปลายมน",
-        "properties_info": "ดอกแก้ริดสีดวงทวาร ฝักแก้ท้องผูก เนื้อไม้แข็งใช้ทำเสาบ้านและเครื่องเรือน"
-      }
-    ];
-
-    let html5QrCode = null;
-    let isCameraActive = false;
-    let currentLang = localStorage.getItem('app_lang') || 'th';
-    let currentTheme = localStorage.getItem('app_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    let isAdminLoggedIn = localStorage.getItem('is_admin') === 'true';
-    let currentTreeData = null;
-    let isCreatingNew = false;
-    let openedFromAdminDb = false;
-    
-    let storedLocalData = localStorage.getItem('skc_plant_data');
-    let allTreesCache = storedLocalData ? JSON.parse(storedLocalData) : initialPlantData;
-    
-    // ตรวจสอบและซิงค์ข้อมูลต้นราชพฤกษ์หรือข้อมูลใหม่ๆ เข้าไปใน LocalStorage อัตโนมัติ
-    if (!allTreesCache.some(i => i.tree_id === 'plant-1-0031' || i.plant_name === 'ราชพฤกษ์')) {
-      allTreesCache.push({
-        "no": "30",
-        "tree_id": "plant-1-0031",
-        "plant_name": "ราชพฤกษ์",
-        "local_name": "คูน / ราชพฤกษ์",
-        "scientific_name": "Cassia fistula L. (FABACEAE)",
-        "family_name": "FABACEAE",
-        "stem_info": "ไม้ยืนต้นขนาดกลาง สูง 10-20 เมตร เปลือกนอกสีเทาเรียบหรือแตกเป็นร่องตื้น",
-        "leaf_info": "ใบประกอบแบบขนนกปลายคู่ เรียงสลับ ใบย่อยรูปไข่หรือรูปรี ปลายมน",
-        "properties_info": "ดอกแก้ริดสีดวงทวาร ฝักแก้ท้องผูก เนื้อไม้แข็งใช้ทำเสาบ้านและเครื่องเรือน"
-      });
-      localStorage.setItem('skc_plant_data', JSON.stringify(allTreesCache));
-    }
-
-    const translations = {
-      th: {
-        title: "🌳 สแกน QR Code",
-        subtitle: "สแกน QR Code บนป้ายต้นไม้เพื่อดูข้อมูลพรรณไม้",
-        loading: "กำลังค้นหาข้อมูลพรรณไม้...",
-        no: "ลำดับ: ",
-        localName: "ชื่อท้องถิ่น:",
-        scienceName: "ชื่อวิทยาศาสตร์:",
-        modalTitle: "⚙️ ตั้งค่า",
-        langSelect: "🌐 เลือกภาษา",
-        closeBtn: "ตกลง"
-      },
-      en: {
-        title: "🌳 Tree Tag Scanner",
-        subtitle: "Scan QR Code on tree tags to view botanical details",
-        loading: "Searching plant information...",
-        no: "No: ",
-        localName: "Local Name:",
-        scienceName: "Scientific Name:",
-        modalTitle: "⚙️ Settings",
-        langSelect: "🌐 Select Language",
-        closeBtn: "OK"
-      }
-    };
-
-    window.onload = function() {
-      const savedBg = localStorage.getItem('skc_current_wallpaper');
-      if (savedBg) {
-        document.getElementById('app-body').style.backgroundImage = `url('${savedBg}')`;
-      } else {
-        randomizeWallpaper();
-      }
-
-      applyTheme();
-      applyLanguage();
-      updateAdminUI();
-      startScan();
-      updateLiveClock();
-      setInterval(updateLiveClock, 1000);
-      initWeatherAndLocation();
-    };
-
-    function updateLiveClock() {
-      const now = new Date();
-      const options = { 
-        weekday: 'short', 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric', 
-        hour: '2-digit', 
-        minute: '2-digit', 
-        second: '2-digit',
-        hour12: false 
-      };
-      const locale = currentLang === 'th' ? 'th-TH' : 'en-US';
-      const timeString = now.toLocaleDateString(locale, options);
-      const clockEl = document.getElementById('live-clock');
-      if (clockEl) {
-        clockEl.innerText = `🕒 ${timeString}`;
-      }
-    }
-
-    function initWeatherAndLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            fetchWeatherAndLocationName(position.coords.latitude, position.coords.longitude);
-          },
-          (error) => {
-            fetchWeatherAndLocationName(17.1631, 103.7371, "สกลนคร");
-          },
-          { timeout: 10000, maximumAge: 60000 }
-        );
-      } else {
-        fetchWeatherAndLocationName(17.1631, 103.7371, "สกลนคร");
-      }
-    }
-
-    async function fetchWeatherAndLocationName(lat, lon, fallbackName = null) {
-      let locationLabel = fallbackName;
-      if (!locationLabel) {
-        try {
-          const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=th`);
-          const geoData = await geoRes.json();
-          if (geoData && geoData.address) {
-            locationLabel = geoData.address.suburb || geoData.address.district || geoData.address.city || geoData.address.province || "ตำแหน่งปัจจุบัน";
-          } else {
-            locationLabel = "ตำแหน่งของฉัน";
-          }
-        } catch (e) {
-          locationLabel = "ตำแหน่งของฉัน";
-        }
-      }
-
-      try {
-        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m`);
-        const weatherData = await weatherRes.json();
-        if (weatherData && weatherData.current) {
-          const temp = Math.round(weatherData.current.temperature_2m);
-          const humidity = weatherData.current.relative_humidity_2m;
-          const weatherEl = document.getElementById('weather-info');
-          if (weatherEl) {
-            weatherEl.innerText = `📍 ${locationLabel} 🌡️ ${temp}°C 💧 ${humidity}%`;
-          }
-        }
-      } catch (e) {
-        const weatherEl = document.getElementById('weather-info');
-        if (weatherEl) {
-          weatherEl.innerText = `📍 ${locationLabel}`;
-        }
-      }
-    }
-
-    function setTheme(theme) {
-      currentTheme = theme;
-      localStorage.setItem('app_theme', theme);
-      applyTheme();
-    }
-
-    function toggleTheme() {
-      currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      localStorage.setItem('app_theme', currentTheme);
-      applyTheme();
-    }
-
-    function applyTheme() {
-      const icon = document.getElementById('theme-icon');
-      if (currentTheme === 'dark') {
-        document.documentElement.classList.add('dark');
-        if (icon) icon.innerText = '☀️';
-      } else {
-        document.documentElement.classList.remove('dark');
-        if (icon) icon.innerText = '🌙';
-      }
-    }
-
-    function setLanguage(lang) {
-      currentLang = lang;
-      localStorage.setItem('app_lang', lang);
-      applyLanguage();
-      updateLiveClock();
-    }
-
-    function applyLanguage() {
-      const t = translations[currentLang];
-      document.getElementById('txt-title').innerText = t.title;
-      document.getElementById('txt-subtitle').innerText = t.subtitle;
-      document.getElementById('loading-text').innerText = t.loading;
-      document.getElementById('lbl-local-name').innerText = t.localName;
-      document.getElementById('lbl-science-name').innerText = t.scienceName;
-      document.getElementById('txt-modal-title').innerText = t.modalTitle;
-      document.getElementById('lbl-lang-select').innerText = t.langSelect;
-      document.getElementById('btn-close-modal').innerText = t.closeBtn;
-    }
-
-    function startScan() {
-      document.getElementById('scanner-container').classList.remove('hidden');
-      document.getElementById('result-card').classList.add('hidden');
-      document.getElementById('admin-edit-card').classList.add('hidden');
-
-      if (!html5QrCode) {
-        html5QrCode = new Html5Qrcode("reader");
-      }
-
-      const config = { fps: 10, qrbox: { width: 220, height: 220 } };
-      
-      html5QrCode.start(
-        { facingMode: "environment" },
-        config,
-        onScanSuccess,
-        (errorMessage) => {}
-      ).then(() => {
-        isCameraActive = true;
-        updateCamToggleButton();
-      }).catch(err => {
-        console.error("Unable to start scanning.", err);
-        isCameraActive = false;
-        updateCamToggleButton();
-      });
-    }
-
-    function stopScan() {
-      if (html5QrCode && isCameraActive) {
-        html5QrCode.stop().then(() => {
-          isCameraActive = false;
-          updateCamToggleButton();
-        }).catch(err => console.log(err));
-      }
-    }
-
-    function toggleCameraState() {
-      if (isCameraActive) {
-        stopScan();
-      } else {
-        startScan();
-      }
-    }
-
-    function updateCamToggleButton() {
-      const btn = document.getElementById('btn-toggle-cam');
-      if (isCameraActive) {
-        btn.innerText = "🛑 ปิดกล้องสแกน";
-        btn.className = "w-full py-3.5 bg-red-500 hover:bg-red-600 text-white font-bold text-xs rounded-2xl shadow-md transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]";
-      } else {
-        btn.innerText = "📷 เปิดกล้องสแกน";
-        btn.className = "w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-2xl shadow-md transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]";
-      }
-    }
-
-    function onScanSuccess(decodedText, decodedResult) {
-      stopScan();
-
-      let scannedRaw = decodedText.trim();
-      let foundTree = null;
-
-      foundTree = allTreesCache.find(item => 
-        (item.tree_id && item.tree_id.toLowerCase() === scannedRaw.toLowerCase()) ||
-        (item.no && item.no.toLowerCase() === scannedRaw.toLowerCase())
-      );
-
-      if (!foundTree && (scannedRaw.includes('http') || scannedRaw.includes('?'))) {
-        try {
-          const urlObj = new URL(scannedRaw);
-          const queryId = urlObj.searchParams.get('id') || urlObj.searchParams.get('tree') || urlObj.searchParams.get('code');
-          if (queryId) {
-            foundTree = allTreesCache.find(item => item.tree_id && item.tree_id.toLowerCase() === queryId.toLowerCase());
-          }
-        } catch (e) {
-          const parts = scannedRaw.split(/[\?=&/]/);
-          for (let p of parts) {
-            foundTree = allTreesCache.find(item => item.tree_id && item.tree_id.toLowerCase() === p.toLowerCase());
-            if (foundTree) break;
-          }
-        }
-      }
-
-      if (!foundTree) {
-        foundTree = allTreesCache.find(item => 
-          item.tree_id && scannedRaw.toLowerCase().includes(item.tree_id.toLowerCase())
-        );
-      }
-
-      if (foundTree) {
-        displayTreeData(foundTree);
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'ไม่พบข้อมูล',
-          text: `ไม่พบข้อมูลจาก QR Code นี้: "${scannedRaw}"`,
-          confirmButtonText: 'ตกลง',
-          confirmButtonColor: '#059669'
-        }).then(() => {
-          startScan();
-        });
-      }
-    }
-
-    function displayTreeData(tree) {
-      currentTreeData = tree;
-      document.getElementById('scanner-container').classList.add('hidden');
-      document.getElementById('result-card').classList.remove('hidden');
-      
-      document.getElementById('tree-img').src = tree.image_url || "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=600&q=80";
-      document.getElementById('tree-id-badge').innerText = tree.tree_id || '-';
-      document.getElementById('tree-no').innerText = `ลำดับ: ${tree.no || '-'}`;
-      document.getElementById('tree-family').innerText = tree.family_name || 'ไม่ระบุวงศ์';
-      
-      // รองรับคีย์ทุกรูปแบบ ป้องกันค่าว่างหรือเครื่องหมายขีด -
-      document.getElementById('tree-plant-name').innerText = tree.plant_name || tree.name || '-';
-      document.getElementById('tree-local-name').innerText = tree.local_name || '-';
-      document.getElementById('tree-science').innerText = tree.science_name || '-';
-      document.getElementById('tree-stem').innerText = tree.stem_info || tree.trunk || tree.ไม้ || '-';
-      document.getElementById('tree-leaf').innerText = tree.leaf_info || tree.leaf || '-';
-      document.getElementById('tree-properties').innerText = tree.properties_info || tree.property || '-';
-
-      updateAdminUI();
-    }
-
-    function nextTree() {
-      if (!allTreesCache || allTreesCache.length === 0) return;
-      const currentIndex = allTreesCache.findIndex(i => i.tree_id === currentTreeData?.tree_id);
-      let nextIndex = (currentIndex + 1) % allTreesCache.length;
-      displayTreeData(allTreesCache[nextIndex]);
-    }
-
-    function prevTree() {
-      if (!allTreesCache || allTreesCache.length === 0) return;
-      const currentIndex = allTreesCache.findIndex(i => i.tree_id === currentTreeData?.tree_id);
-      let prevIndex = (currentIndex - 1 + allTreesCache.length) % allTreesCache.length;
-      displayTreeData(allTreesCache[prevIndex]);
-    }
-
-    function updateAdminUI() {
-      const statusBadge = document.getElementById('admin-status-badge');
-      const loginBtnContainer = document.getElementById('admin-login-btn-container');
-      const loggedContainer = document.getElementById('admin-logged-container');
-      const loginForm = document.getElementById('admin-login-form');
-      const adminActionsGroup = document.getElementById('admin-actions-group');
-      const adminBackBtnContainer = document.getElementById('admin-back-btn-container');
-      
-      const navContainer = document.getElementById('nav-container');
-      const btnPrev = document.getElementById('btn-prev');
-      const btnNext = document.getElementById('btn-next');
-
-      if (isAdminLoggedIn) {
-        statusBadge.classList.remove('hidden');
-        loginBtnContainer.classList.add('hidden');
-        loginForm.classList.add('hidden');
-        loggedContainer.classList.remove('hidden');
-        if (currentTreeData) {
-          adminActionsGroup.classList.remove('hidden');
-          adminBackBtnContainer.classList.remove('hidden');
-          navContainer.className = "grid grid-cols-3 gap-2 pt-0.5";
-          btnPrev.classList.remove('hidden');
-          btnNext.classList.remove('hidden');
-        }
-      } else {
-        statusBadge.classList.add('hidden');
-        loginBtnContainer.classList.remove('hidden');
-        loggedContainer.classList.add('hidden');
-        adminActionsGroup.classList.add('hidden');
-        adminBackBtnContainer.classList.add('hidden');
-        navContainer.className = "grid grid-cols-1 gap-2 pt-0.5";
-        btnPrev.classList.add('hidden');
-        btnNext.classList.add('hidden');
-      }
-    }
-
-    function showLoginForm() {
-      document.getElementById('admin-login-form').classList.remove('hidden');
-      document.getElementById('admin-login-btn-container').classList.add('hidden');
-    }
-
-    function handleAdminLogin() {
-      const email = document.getElementById('admin-email').value.trim();
-      const password = document.getElementById('admin-password').value.trim();
-
-      if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
-        isAdminLoggedIn = true;
-        localStorage.setItem('is_admin', 'true');
-        Swal.fire({
-          icon: 'success',
-          title: 'สำเร็จ',
-          text: 'เข้าสู่ระบบแอดมินสำเร็จ!',
-          timer: 1500,
-          showConfirmButton: false
-        });
-        updateAdminUI();
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'ผิดพลาด',
-          text: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง!',
-          confirmButtonText: 'ตกลง',
-          confirmButtonColor: '#059669'
-        });
-      }
-    }
-
-    function handleAdminLogout() {
-      isAdminLoggedIn = false;
-      localStorage.setItem('is_admin', 'false');
-      document.getElementById('admin-email').value = "";
-      document.getElementById('admin-password').value = "";
-      Swal.fire({
-        icon: 'info',
-        title: 'ออกจากระบบ',
-        text: 'ออกจากระบบแอดมินแล้ว',
-        timer: 1500,
-        showConfirmButton: false
-      });
-      updateAdminUI();
-    }
-
-    function openSettings() {
-      document.getElementById('settings-modal').classList.remove('hidden');
-    }
-
-    function closeSettings() {
-      document.getElementById('settings-modal').classList.add('hidden');
-    }
-
-    function exportDatabaseToExcel() {
-      const worksheet = XLSX.utils.json_to_sheet(allTreesCache);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "PlantDatabase");
-      XLSX.writeFile(workbook, "SKC_Plant_Database.xlsx");
-    }
-
-    function openAdminDatabaseModal() {
-      document.getElementById('admin-db-modal').classList.remove('hidden');
-      renderAdminDatabaseList(allTreesCache);
-    }
-
-    function closeAdminDatabaseModal() {
-      document.getElementById('admin-db-modal').classList.add('hidden');
-    }
-
-    function renderAdminDatabaseList(items) {
-      const container = document.getElementById('db-list-container');
-      document.getElementById('dash-total-count').innerText = items.length;
-      
-      const familyCounts = {};
-      items.forEach(i => {
-        const fam = i.family_name || 'ไม่ระบุวงศ์';
-        familyCounts[fam] = (familyCounts[fam] || 0) + 1;
-      });
-
-      const families = Object.keys(familyCounts);
-      document.getElementById('dash-family-count').innerText = families.length;
-
-      if (items.length === 0) {
-        container.innerHTML = `<p class="text-center text-xs text-gray-400 py-8 font-medium">ไม่พบข้อมูลพรรณไม้</p>`;
-        return;
-      }
-
-      container.innerHTML = items.map(item => `
-        <div class="flex items-center justify-between p-2.5 bg-white/80 dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700 text-xs shadow-sm transition hover:border-emerald-300">
-          <div class="truncate pr-2">
-            <span class="font-mono bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-md mr-1.5 font-bold">${item.tree_id}</span>
-            <span class="font-bold text-gray-800 dark:text-slate-200">${item.plant_name || item.name}</span>
-            <span class="text-gray-400 block text-[10px] truncate mt-0.5">${item.science_name || '-'}</span>
-          </div>
-          <div class="flex gap-1.5 shrink-0">
-            <button onclick="editTreeFromModal('${item.tree_id}')" class="px-2.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-[10px] font-bold shadow-sm transition cursor-pointer">แก้ไข</button>
-            <button onclick="generateQRForModal('${item.tree_id}')" class="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[10px] font-bold shadow-sm transition cursor-pointer">QR</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function filterAdminDatabase() {
-      const keyword = document.getElementById('db-search-input').value.toLowerCase();
-      const filtered = allTreesCache.filter(item => 
-        (item.tree_id && item.tree_id.toLowerCase().includes(keyword)) ||
-        (item.plant_name && item.plant_name.toLowerCase().includes(keyword)) ||
-        (item.name && item.name.toLowerCase().includes(keyword)) ||
-        (item.local_name && item.local_name.toLowerCase().includes(keyword)) ||
-        (item.science_name && item.science_name.toLowerCase().includes(keyword)) ||
-        (item.properties_info && item.properties_info.toLowerCase().includes(keyword))
-      );
-      renderAdminDatabaseList(filtered);
-    }
-
-    function editTreeFromModal(treeId) {
-      const tree = allTreesCache.find(i => i.tree_id === treeId);
-      if (tree) {
-        closeAdminDatabaseModal();
-        closeSettings();
-        displayTreeData(tree);
-        openEditForm();
-      }
-    }
-
-    function generateQRForModal(treeId) {
-      openedFromAdminDb = true;
-      closeAdminDatabaseModal();
-      const tree = allTreesCache.find(i => i.tree_id === treeId);
-      if (tree) {
-        currentTreeData = tree;
-        generateQRCodeForCurrent();
-      }
-    }
-
-    function openAddNewTreeForm() {
-      closeAdminDatabaseModal();
-      isCreatingNew = true;
-      currentTreeData = {
-        tree_id: "",
-        no: String(allTreesCache.length + 1),
-        plant_name: "",
-        local_name: "",
-        science_name: "",
-        family_name: "",
-        stem_info: "",
-        leaf_info: "",
-        properties_info: "",
-        image_url: ""
-      };
-
-      document.getElementById('scanner-container').classList.add('hidden');
-      document.getElementById('result-card').classList.add('hidden');
-      document.getElementById('admin-edit-card').classList.remove('hidden');
-
-      document.getElementById('edit-form-title').innerText = "➕ เพิ่มพรรณไม้ใหม่";
-      document.getElementById('container-tree-id-input').classList.remove('hidden');
-      document.getElementById('edit-tree-id').innerText = "New";
-      document.getElementById('btn-delete-tree').classList.add('hidden');
-
-      document.getElementById('input-new-tree-id').value = `SKC-0${allTreesCache.length + 1}`;
-      document.getElementById('edit-no').value = allTreesCache.length + 1;
-      document.getElementById('edit-plant-name').value = '';
-      document.getElementById('edit-local-name').value = '';
-      document.getElementById('edit-science-name').value = '';
-      document.getElementById('edit-family-name').value = '';
-      document.getElementById('edit-stem-info').value = '';
-      document.getElementById('edit-leaf-info').value = '';
-      document.getElementById('edit-properties-info').value = '';
-
-      document.getElementById('image-preview-container').classList.add('hidden');
-      document.getElementById('edit-image-file').value = '';
-    }
-
-    function openEditForm() {
-      if (!currentTreeData) return;
-      isCreatingNew = false;
-      document.getElementById('result-card').classList.add('hidden');
-      document.getElementById('admin-edit-card').classList.remove('hidden');
-
-      document.getElementById('edit-form-title').innerText = "✏️ แก้ไขข้อมูลพรรณไม้";
-      document.getElementById('container-tree-id-input').classList.add('hidden');
-      document.getElementById('btn-delete-tree').classList.remove('hidden');
-
-      document.getElementById('edit-tree-id').innerText = currentTreeData.tree_id || '';
-      document.getElementById('edit-no').value = currentTreeData.no || '';
-      document.getElementById('edit-plant-name').value = currentTreeData.plant_name || currentTreeData.name || '';
-      document.getElementById('edit-local-name').value = currentTreeData.local_name || '';
-      document.getElementById('edit-science-name').value = currentTreeData.science_name || '';
-      document.getElementById('edit-family-name').value = currentTreeData.family_name || '';
-      document.getElementById('edit-stem-info').value = currentTreeData.stem_info || currentTreeData.trunk || currentTreeData.ไม้ || '';
-      document.getElementById('edit-leaf-info').value = currentTreeData.leaf_info || currentTreeData.leaf || '';
-      document.getElementById('edit-properties-info').value = currentTreeData.properties_info || currentTreeData.property || '';
-
-      document.getElementById('image-preview-container').classList.add('hidden');
-      document.getElementById('edit-image-file').value = '';
-    }
-
-    function cancelEdit() {
-      document.getElementById('admin-edit-card').classList.add('hidden');
-      if (isCreatingNew) {
-        openAdminDatabaseModal();
-      } else if (currentTreeData) {
-        displayTreeData(currentTreeData);
-      } else {
-        startScan();
-      }
-    }
-
-    function previewSelectedImage(input) {
-      if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          document.getElementById('image-preview').src = e.target.result;
-          document.getElementById('image-preview-container').classList.remove('hidden');
-          currentTreeData.image_url = e.target.result;
-        }
-        reader.readAsDataURL(input.files[0]);
-      }
-    }
-
-    function saveTreeData() {
-      if (!currentTreeData) return;
-
-      if (isCreatingNew) {
-        const newId = document.getElementById('input-new-tree-id').value.trim();
-        if (!newId) {
-          Swal.fire({ icon: 'warning', title: 'แจ้งเตือน', text: 'กรุณากรอกรหัสต้นไม้ก่อน!', confirmButtonColor: '#059669' });
-          return;
-        }
-        if (allTreesCache.some(i => i.tree_id.toLowerCase() === newId.toLowerCase())) {
-          Swal.fire({ icon: 'error', title: 'ซ้ำกัน', text: `รหัสต้นไม้ "${newId}" มีอยู่ในระบบแล้ว`, confirmButtonColor: '#059669' });
-          return;
-        }
-        currentTreeData.tree_id = newId;
-      }
-
-      currentTreeData.no = document.getElementById('edit-no').value.trim();
-      currentTreeData.plant_name = document.getElementById('edit-plant-name').value.trim();
-      currentTreeData.local_name = document.getElementById('edit-local-name').value.trim();
-      currentTreeData.science_name = document.getElementById('edit-science-name').value.trim();
-      currentTreeData.family_name = document.getElementById('edit-family-name').value.trim();
-      currentTreeData.stem_info = document.getElementById('edit-stem-info').value.trim();
-      currentTreeData.leaf_info = document.getElementById('edit-leaf-info').value.trim();
-      currentTreeData.properties_info = document.getElementById('edit-properties-info').value.trim();
-
-      if (!currentTreeData.image_url) {
-        currentTreeData.image_url = "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=600&q=80";
-      }
-
-      if (isCreatingNew) {
-        allTreesCache.push(currentTreeData);
-      } else {
-        const index = allTreesCache.findIndex(i => i.tree_id === currentTreeData.tree_id);
-        if (index !== -1) {
-          allTreesCache[index] = currentTreeData;
-        }
-      }
-
-      localStorage.setItem('skc_plant_data', JSON.stringify(allTreesCache));
-      Swal.fire({
-        icon: 'success',
-        title: 'บันทึกสำเร็จ',
-        text: 'บันทึกข้อมูลเรียบร้อยแล้ว!',
-        timer: 1500,
-        showConfirmButton: false
-      });
-      
-      document.getElementById('admin-edit-card').classList.add('hidden');
-      displayTreeData(currentTreeData);
-    }
-
-    function deleteCurrentTree() {
-      if (!currentTreeData) return;
-      Swal.fire({
-        title: 'ยืนยันการลบ?',
-        text: `คุณต้องการลบข้อมูลพรรณไม้รหัส ${currentTreeData.tree_id} ใช่หรือไม่?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#dc2626',
-        cancelButtonColor: '#6b7280',
-        confirmButtonText: 'ลบข้อมูล',
-        cancelButtonText: 'ยกเลิก'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          allTreesCache = allTreesCache.filter(i => i.tree_id !== currentTreeData.tree_id);
-          localStorage.setItem('skc_plant_data', JSON.stringify(allTreesCache));
-          Swal.fire({ icon: 'success', title: 'ลบแล้ว', text: 'ลบข้อมูลเรียบร้อย', timer: 1500, showConfirmButton: false });
-          document.getElementById('admin-edit-card').classList.add('hidden');
-          startScan();
-        }
-      });
-    }
-
-    function generateQRCodeForCurrent() {
-      if (!currentTreeData) return;
-      const modal = document.getElementById('qr-modal');
-      const container = document.getElementById('qrcode-canvas');
-      const targetIdEl = document.getElementById('qr-target-id');
-
-      container.innerHTML = "";
-      targetIdEl.innerText = `รหัส: ${currentTreeData.tree_id} (${currentTreeData.plant_name || currentTreeData.name})`;
-      modal.classList.remove('hidden');
-
-      new QRCode(container, {
-        text: currentTreeData.tree_id,
-        width: 160,
-        height: 160,
-        colorDark: "#000000",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-      });
-    }
-
-    function closeQRModal() {
-      document.getElementById('qr-modal').classList.add('hidden');
-      if (openedFromAdminDb) {
-        openedFromAdminDb = false;
-        openAdminDatabaseModal();
-      }
-    }
-
-    function printQRCode() {
-      const canvas = document.getElementById('qrcode-canvas').querySelector('canvas');
-      if (!canvas) return;
-      
-      const dataUrl = canvas.toDataURL();
-      const pName = currentTreeData.plant_name || currentTreeData.name;
-      const windowContent = `
-        <!DOCTYPE html>
-        <html lang="th">
-        <head>
-          <meta charset="UTF-8">
-          <title>Print QR - ${currentTreeData.tree_id}</title>
-          <style>
-            body { font-family: 'Sarabun', sans-serif; text-align: center; padding: 15px; background: #fff; color: #000; }
-            .badge-card { border: 3px solid #065f46; padding: 20px; display: inline-block; border-radius: 16px; width: 320px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-            .header { font-size: 14px; font-weight: bold; color: #065f46; margin-bottom: 4px; }
-            .sub-header { font-size: 11px; color: #4b5563; margin-bottom: 12px; border-bottom: 1px solid #d1d5db; padding-bottom: 6px; }
-            .plant-name { font-size: 20px; font-weight: bold; color: #111827; margin: 6px 0; }
-            .science-name { font-size: 13px; font-style: italic; color: #4b5563; margin-bottom: 12px; }
-            .qr-box { margin: 10px 0; }
-            .footer-id { font-size: 14px; font-weight: bold; font-family: monospace; background: #f3f4f6; padding: 6px; border-radius: 8px; margin-top: 10px; display: inline-block; }
-          </style>
-        </head>
-        <body>
-          <div class="badge-card">
-            <div class="header">โครงการอนุรักษ์พันธุกรรมพืชอันเนื่องมาจากพระราชดำริ (อพ.สธ.)</div>
-            <div class="sub-header">SKCPlant Botanical Database</div>
-            <div class="plant-name">${pName}</div>
-            <div class="science-name">${currentTreeData.science_name || ''}</div>
-            <div class="qr-box">
-              <img src="${dataUrl}" width="140" height="140">
+<body class="bg-gradient-to-br from-emerald-50 via-teal-50 to-green-100 min-h-screen pb-12 text-gray-800">
+
+    <!-- Header & Admin Toggle Bar -->
+    <header class="bg-gradient-to-r from-emerald-900 via-emerald-800 to-teal-900 text-white p-3 sm:p-4 shadow-lg sticky top-0 z-40 backdrop-blur-md bg-opacity-95">
+        <div class="max-w-4xl mx-auto w-full flex justify-between items-center text-xs sm:text-sm px-1 sm:px-2">
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                <span class="text-lg sm:text-xl">📍</span>
+                <div>
+                    <p id="location-text" class="font-bold tracking-wide text-xs sm:text-sm">กำลังค้นหาตำแหน่ง...</p>
+                    <p id="datetime-text" class="text-emerald-200 text-[10px] sm:text-[11px] mt-0.5"></p>
+                </div>
             </div>
+            <div class="flex items-center gap-2 sm:gap-3">
+                <p id="weather-text" class="font-semibold bg-emerald-800/60 px-2.5 py-1 rounded-full border border-emerald-700 hidden sm:block text-xs">🌡️ กำลังโหลด...</p>
+                <button onclick="toggleAdminModal()" class="bg-emerald-600 hover:bg-emerald-500 p-2 sm:p-2.5 rounded-xl sm:rounded-2xl transition shadow-md text-white flex items-center justify-center transform hover:scale-105 active:scale-95 text-xs sm:text-sm" title="ระบบจัดการแอดมิน">
+                    🔐
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== QR SCANNER VIEW ==================== -->
+    <div id="scanner-view" class="max-w-md mx-auto mt-4 sm:mt-6 px-3 sm:px-4 animate-fade-in">
+        <div class="bg-white/90 backdrop-blur-md rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-emerald-100 p-4 sm:p-6 text-center space-y-3 sm:space-y-4">
+            <div class="inline-block p-2.5 sm:p-3 bg-emerald-100 rounded-2xl text-emerald-700 text-xl sm:text-2xl mb-1 shadow-inner">
+                📷
+            </div>
+            <h2 class="text-lg sm:text-xl font-bold text-emerald-900">สแกน QR Code พรรณไม้</h2>
+            <p class="text-xs text-gray-500 leading-relaxed">กรุณาเปิดกล้องและหันไปที่ป้าย QR Code ของต้นไม้เพื่อศึกษาข้อมูลทางพฤกษศาสตร์</p>
+            
+            <div id="reader" class="w-full rounded-2xl overflow-hidden border-2 border-emerald-200 bg-gray-900 shadow-inner"></div>
+            
+            <div class="grid grid-cols-2 gap-2 pt-2">
+                <button onclick="startScanner()" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 px-3 rounded-xl text-xs font-semibold shadow-md transition transform hover:scale-[1.02]">
+                    ▶️ เปิดกล้อง
+                </button>
+                <button onclick="stopScanner()" class="bg-rose-500 hover:bg-rose-600 text-white py-2.5 px-3 rounded-xl text-xs font-semibold shadow-md transition transform hover:scale-[1.02]">
+                    ⏹️ ปิดกล้อง
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== USER VIEW ==================== -->
+    <div id="user-view" class="hidden max-w-md mx-auto mt-4 sm:mt-6 px-3 sm:px-4 animate-fade-in">
+        <div class="mb-4">
+            <button onclick="backToScanner()" class="bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-semibold hover:bg-emerald-800 transition flex items-center gap-2 shadow-md transform hover:scale-105">
+                <span>📷</span> กลับไปสแกน QR ใหม่
+            </button>
+        </div>
+
+        <div id="loading" class="bg-white rounded-3xl p-10 text-center shadow-lg text-gray-500 animate-pulse border border-emerald-50">
+            🌿 กำลังโหลดข้อมูลพรรณไม้...
+        </div>
+
+        <div id="content" class="hidden bg-white rounded-3xl shadow-2xl overflow-hidden border border-emerald-100">
+            <div class="relative h-60 sm:h-72 bg-emerald-900 overflow-hidden shadow-inner">
+                <img id="plant-img" src="" alt="ภาพพรรณไม้" class="w-full h-full object-cover transform hover:scale-105 transition duration-500" onerror="this.src='https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=600&q=80'">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                <div class="absolute bottom-3 left-3 bg-black/50 backdrop-blur-md text-white text-xs px-3.5 py-1.5 rounded-full border border-white/20 shadow-lg">
+                    รหัสป้าย: <span id="plant-code" class="font-bold text-emerald-300"></span>
+                </div>
+            </div>
+
+            <div class="p-5 sm:p-6 space-y-4 sm:space-y-5">
+                <div>
+                    <h1 id="plant-name" class="text-xl sm:text-2xl font-bold text-emerald-900 tracking-tight"></h1>
+                    <p id="local-name" class="text-emerald-700 text-xs sm:text-sm font-semibold mt-1 bg-emerald-50 inline-block px-3 py-0.5 rounded-full border border-emerald-100"></p>
+                </div>
+
+                <div class="bg-gradient-to-br from-emerald-50/80 to-teal-50/50 p-3.5 sm:p-4 rounded-2xl space-y-1.5 text-xs sm:text-sm border border-emerald-100/80 shadow-sm">
+                    <p><strong>ชื่อวิทยาศาสตร์:</strong> <span id="sci-name" class="italic text-gray-700"></span></p>
+                    <p><strong>วงศ์ (Family):</strong> <span id="family-name" class="text-gray-700"></span></p>
+                </div>
+
+                <div class="space-y-1.5">
+                    <h3 class="font-bold text-emerald-900 flex items-center gap-2 text-xs sm:text-sm">
+                        <span class="p-1 bg-emerald-100 rounded-lg">🌿</span> ลักษณะทางพฤกษศาสตร์
+                    </h3>
+                    <p id="botany-desc" class="text-gray-600 text-xs sm:text-sm leading-relaxed bg-gray-50 p-3.5 sm:p-4 rounded-2xl border border-gray-100 shadow-inner"></p>
+                </div>
+
+                <div class="space-y-1.5">
+                    <h3 class="font-bold text-amber-800 flex items-center gap-2 text-xs sm:text-sm">
+                        <span class="p-1 bg-amber-100 rounded-lg">💊</span> สรรพคุณทางยา / พื้นบ้าน
+                    </h3>
+                    <p id="properties-desc" class="text-gray-600 text-xs sm:text-sm leading-relaxed bg-amber-50/60 p-3.5 sm:p-4 rounded-2xl border border-amber-100/80 shadow-inner"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== ADMIN DASHBOARD VIEW (ปรับ Responsive มือถือแล้ว) ==================== -->
+    <div id="admin-view" class="hidden max-w-4xl mx-auto mt-4 sm:mt-6 px-3 sm:px-4 space-y-4 sm:space-y-6 animate-fade-in">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-xl border border-emerald-100 gap-3 sm:gap-4">
             <div>
-              <span class="footer-id">รหัส: ${currentTreeData.tree_id}</span>
+                <h1 class="text-lg sm:text-xl font-bold text-emerald-900">🛠️ แอดมินแดชบอร์ด SKC-Plant</h1>
+                <p class="text-gray-500 text-xs mt-0.5">จัดการข้อมูลพรรณไม้ และสร้าง QR Code สำหรับติดป้าย</p>
             </div>
-          </div>
-          <script>
-            window.onload = function() { window.print(); window.close(); }
-          <\/script>
-        </body>
-        </html>
-      `;
-      const printWin = window.open('', '', 'width=500,height=600');
-      printWin.document.open();
-      printWin.document.write(windowContent);
-      printWin.document.close();
-    }
-  </script>
+            <div class="flex gap-2 w-full sm:w-auto">
+                <button onclick="openAddModal()" class="flex-1 sm:flex-none bg-emerald-600 text-white px-3.5 py-2.5 rounded-xl sm:rounded-2xl text-xs font-semibold hover:bg-emerald-700 transition shadow-md transform hover:scale-105">➕ เพิ่มพรรณไม้</button>
+                <button onclick="switchToUserView()" class="flex-1 sm:flex-none bg-gray-100 text-gray-700 px-3.5 py-2.5 rounded-xl sm:rounded-2xl text-xs font-semibold hover:bg-gray-200 transition shadow-sm">ออกจากระบบ</button>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden border border-emerald-100">
+            <!-- ตารางรองรับ Touch Scroll บนมือถือ -->
+            <div class="overflow-x-auto -mx-1 sm:mx-0">
+                <table class="w-full text-left border-collapse text-xs sm:text-sm min-w-[500px]">
+                    <thead>
+                        <tr class="bg-emerald-50/80 text-emerald-900 border-b border-emerald-100">
+                            <th class="p-3 sm:p-4 font-bold w-24">รหัส</th>
+                            <th class="p-3 sm:p-4 font-bold">ชื่อพรรณไม้</th>
+                            <th class="p-3 sm:p-4 font-bold hidden sm:table-cell">ชื่อวิทยาศาสตร์</th>
+                            <th class="p-3 sm:p-4 text-center font-bold w-28">จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="plant-table-body" class="divide-y divide-gray-100">
+                        <tr><td colspan="4" class="p-6 text-center text-gray-400">กำลังโหลดข้อมูล...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODALS ==================== -->
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-5 sm:p-6 space-y-4 shadow-2xl border border-emerald-50 animate-fade-in">
+            <div class="text-center">
+                <div class="inline-block p-3 bg-emerald-100 text-emerald-700 rounded-2xl text-xl mb-2">🔐</div>
+                <h2 class="text-lg font-bold text-emerald-900">เข้าสู่ระบบแอดมิน</h2>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="text-xs font-semibold text-gray-600">อีเมลแอดมิน</label>
+                    <input type="email" id="login-email" placeholder="กรอกอีเมลแอดมิน" autocomplete="off" class="w-full p-3 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mt-1">
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-gray-600">รหัสผ่าน</label>
+                    <input type="password" id="login-pass" placeholder="กรอกรหัสผ่าน" autocomplete="new-password" class="w-full p-3 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 mt-1">
+                </div>
+                <button onclick="handleLogin()" class="w-full bg-emerald-600 text-white py-3 rounded-2xl font-semibold text-sm hover:bg-emerald-700 transition shadow-md">เข้าสู่ระบบ</button>
+                <p id="login-error" class="text-rose-500 text-xs text-center hidden font-medium">รหัสผ่านไม่ถูกต้อง</p>
+                <button onclick="toggleAdminModal()" class="w-full text-gray-400 text-xs text-center pt-1 hover:text-gray-600 transition">ยกเลิก</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Plant Modal -->
+    <div id="plant-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-4 z-50">
+        <div class="bg-white rounded-2xl sm:rounded-3xl max-w-lg w-full p-5 sm:p-6 space-y-3 sm:space-y-4 max-h-[92vh] overflow-y-auto shadow-2xl border border-emerald-50 animate-fade-in">
+            <h2 id="modal-title" class="text-base sm:text-lg font-bold text-emerald-900 border-b pb-2">เพิ่มพรรณไม้ใหม่</h2>
+            <div class="space-y-2.5 sm:space-y-3 text-xs sm:text-sm">
+                <div>
+                    <label class="text-xs font-semibold text-gray-600">รหัส (Auto)</label>
+                    <input type="text" id="m-code" readonly class="w-full p-2.5 bg-gray-100 border rounded-xl sm:rounded-2xl text-gray-500 mt-1 font-mono">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                    <div><label class="text-xs font-semibold text-gray-600">ชื่อพรรณไม้ (ไทย)</label><input type="text" id="m-name" class="w-full p-2.5 border rounded-xl sm:rounded-2xl mt-1 focus:ring-2 focus:ring-emerald-500 focus:outline-none"></div>
+                    <div><label class="text-xs font-semibold text-gray-600">ชื่อท้องถิ่น</label><input type="text" id="m-local" class="w-full p-2.5 border rounded-xl sm:rounded-2xl mt-1 focus:ring-2 focus:ring-emerald-500 focus:outline-none"></div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                    <div><label class="text-xs font-semibold text-gray-600">ชื่อวิทยาศาสตร์</label><input type="text" id="m-sci" class="w-full p-2.5 border rounded-xl sm:rounded-2xl mt-1 focus:ring-2 focus:ring-emerald-500 focus:outline-none"></div>
+                    <div><label class="text-xs font-semibold text-gray-600">ชื่อวงศ์</label><input type="text" id="m-family" class="w-full p-2.5 border rounded-xl sm:rounded-2xl mt-1 focus:ring-2 focus:ring-emerald-500 focus:outline-none"></div>
+                </div>
+                <div><label class="text-xs font-semibold text-gray-600">ลักษณะทางพฤกษศาสตร์</label><textarea id="m-botany" rows="2" class="w-full p-2.5 border rounded-xl sm:rounded-2xl mt-1 focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea></div>
+                <div><label class="text-xs font-semibold text-gray-600">สรรพคุณทางยา</label><textarea id="m-prop" rows="2" class="w-full p-2.5 border rounded-xl sm:rounded-2xl mt-1 focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea></div>
+                
+                <div>
+                    <label class="text-xs font-semibold text-gray-600">แนบไฟล์รูปภาพพรรณไม้</label>
+                    <input type="file" id="m-img-file" accept="image/*" class="w-full p-2 border rounded-xl sm:rounded-2xl text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 mt-1">
+                    <input type="hidden" id="m-img">
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-3 border-t">
+                <button onclick="closePlantModal()" class="px-4 py-2 border rounded-xl sm:rounded-2xl text-xs font-semibold text-gray-600 hover:bg-gray-50 transition">ยกเลิก</button>
+                <button id="save-btn" onclick="savePlantData()" class="px-4 py-2 bg-emerald-600 text-white rounded-xl sm:rounded-2xl text-xs font-semibold hover:bg-emerald-700 transition shadow-md">บันทึก</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Code Modal -->
+    <div id="qr-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-5 sm:p-6 text-center space-y-4 shadow-2xl border border-emerald-50 animate-fade-in">
+            <h3 class="text-base font-bold text-emerald-900">QR Code สำหรับติดป้าย</h3>
+            <p id="qr-plant-title" class="text-xs text-gray-600"></p>
+            <div class="flex justify-center bg-gray-50 p-4 rounded-2xl border shadow-inner">
+                <canvas id="qrcode-canvas"></canvas>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="closeQrModal()" class="w-1/2 py-2.5 border rounded-2xl text-xs font-semibold text-gray-600 hover:bg-gray-50 transition">ปิด</button>
+                <a id="download-qr-btn" download="plant-qr.png" class="w-1/2 bg-emerald-600 text-white py-2.5 rounded-2xl text-xs font-semibold flex items-center justify-center hover:bg-emerald-700 transition shadow-md">ดาวน์โหลด</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== SCRIPT LOGIC ==================== -->
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbw-k1qAPvvteZ177y_o2JOyUdiD-GZXD3e541yfy7JexGrZERenkKdLO6MA9RFC50jUCQ/exec";
+        let plantsList = [];
+        let isAdminLoggedIn = false;
+        let html5QrCode = null;
+
+        function updateDateTime() {
+            const now = new Date();
+            const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+            document.getElementById('datetime-text').innerText = now.toLocaleDateString('th-TH', options) + ' | ' + now.toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 60000);
+
+        function initRealtimeLocation() {
+            const locationText = document.getElementById('location-text');
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=th`)
+                            .then(response => response.json())
+                            .then(data => {
+                                const address = data.address;
+                                const placeName = address.suburb || address.village || address.city || address.county || "พื้นที่ปัจจุบัน";
+                                const province = address.state || "";
+                                locationText.innerText = `${placeName} ${province}`;
+                            })
+                            .catch(() => {
+                                locationText.innerText = `พิกัด: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                            });
+                    },
+                    (error) => {
+                        locationText.innerText = "มสธ. วิทยาเขตสกลนคร";
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                );
+            } else {
+                locationText.innerText = "เบราว์เซอร์ไม่รองรับตำแหน่ง";
+            }
+        }
+        initRealtimeLocation();
+
+        fetch('https://api.open-meteo.com/v1/forecast?latitude=17.1545&current=temperature_2m,relative_humidity_2m')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('weather-text').innerText = `🌡️ ${data.current.temperature_2m}°C | 💧 ${data.current.relative_humidity_2m}%`;
+            }).catch(() => { document.getElementById('weather-text').innerText = "🌡️ 32°C | 💧 65%"; });
+
+        function fetchAllPlants(callback) {
+            fetch(API_URL + "?action=getPlants")
+                .then(res => res.json())
+                .then(data => {
+                    plantsList = Array.isArray(data) ? data : [];
+                    if(callback) callback(plantsList);
+                }).catch(err => console.error("Could not load plants list", err));
+        }
+        fetchAllPlants();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const plantId = urlParams.get('id');
+
+        if (plantId) {
+            loadPlantData(plantId);
+        } else {
+            startScanner();
+        }
+
+        function startScanner() {
+            document.getElementById('scanner-view').classList.remove('hidden');
+            document.getElementById('user-view').classList.add('hidden');
+            document.getElementById('admin-view').classList.add('hidden');
+
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("reader");
+            }
+
+            if (!html5QrCode.isScanning) {
+                html5QrCode.start(
+                    { facingMode: "environment" },
+                    { fps: 10, qrbox: { width: 220, height: 220 } },
+                    (decodedText, decodedResult) => {
+                        html5QrCode.stop().then(() => {
+                            try {
+                                const url = new URL(decodedText);
+                                const scannedId = url.searchParams.get('id');
+                                window.location.href = `?id=${scannedId || decodedText}`;
+                            } catch (e) {
+                                window.location.href = `?id=${decodedText}`;
+                            }
+                        }).catch(err => console.error("Failed to stop scanner.", err));
+                    },
+                    (errorMessage) => {}
+                ).catch(err => {
+                    document.getElementById('reader').innerHTML = '<p class="p-4 text-rose-300 text-xs">ไม่สามารถเปิดกล้องได้ กรุณาอนุญาตการใช้งานกล้องในเบราว์เซอร์</p>';
+                });
+            }
+        }
+
+        function stopScanner() {
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().catch(err => console.error(err));
+            }
+        }
+
+        function backToScanner() {
+            window.location.href = window.location.pathname;
+        }
+
+        function loadPlantData(id) {
+            document.getElementById('scanner-view').classList.add('hidden');
+            document.getElementById('user-view').classList.remove('hidden');
+            document.getElementById('loading').style.display = 'block';
+
+            fetchAllPlants((data) => {
+                const plant = data.find(p => String(p.รหัส).trim() === String(id).trim());
+                document.getElementById('loading').style.display = 'none';
+                if (plant) {
+                    document.getElementById('content').classList.remove('hidden');
+                    document.getElementById('plant-code').innerText = plant.รหัส;
+                    document.getElementById('plant-name').innerText = plant.ชื่อพรรณไม้;
+                    document.getElementById('local-name').innerText = `ชื่อท้องถิ่น: ${plant.ชื่อท้องถิ่น || '-'}`;
+                    document.getElementById('sci-name').innerText = plant.ชื่อวิทยาศาสตร์ || '-';
+                    document.getElementById('family-name').innerText = plant.ชื่อวงศ์ || '-';
+                    document.getElementById('botany-desc').innerText = plant.ลักษณะทางพฤกษศาสตร์ || 'ไม่มีข้อมูล';
+                    document.getElementById('properties-desc').innerText = plant.สรรพคุณ || 'ไม่มีข้อมูล';
+                    if (plant.รูปภาพ) document.getElementById('plant-img').src = plant.รูปภาพ;
+                } else {
+                    document.getElementById('loading').innerHTML = '<p class="text-rose-500 font-semibold text-xs sm:text-sm">ไม่พบข้อมูลพรรณไม้รหัสนี้</p><button onclick="backToScanner()" class="mt-3 bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-md">กลับไปสแกนใหม่</button>';
+                    document.getElementById('loading').style.display = 'block';
+                }
+            });
+        }
+
+        function toggleAdminModal() {
+            if (isAdminLoggedIn) {
+                switchToAdminView();
+            } else {
+                document.getElementById('login-modal').classList.toggle('hidden');
+            }
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            if (email === "admin@tree.com" && pass === "123456") {
+                isAdminLoggedIn = true;
+                document.getElementById('login-modal').classList.add('hidden');
+                switchToAdminView();
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
+
+        function switchToAdminView() {
+            stopScanner();
+            document.getElementById('scanner-view').classList.add('hidden');
+            document.getElementById('user-view').classList.add('hidden');
+            document.getElementById('admin-view').classList.remove('hidden');
+            
+            fetchAllPlants(() => {
+                renderAdminTable();
+            });
+        }
+
+        function switchToUserView() {
+            document.getElementById('admin-view').classList.add('hidden');
+            startScanner();
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('plant-table-body');
+            tbody.innerHTML = '';
+            if (!plantsList || plantsList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="p-6 text-center text-gray-400">ยังไม่มีข้อมูลพรรณไม้</td></tr>';
+                return;
+            }
+            plantsList.forEach(p => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-emerald-50/50 transition border-b border-gray-100">
+                        <td class="p-3 sm:p-4 font-semibold text-emerald-800 font-mono">${p.รหัส}</td>
+                        <td class="p-3 sm:p-4 font-medium">
+                            <div>${p.ชื่อพรรณไม้}</div>
+                            <div class="text-[11px] text-gray-400 italic sm:hidden mt-0.5">${p.ชื่อวิทยาศาสตร์ || ''}</div>
+                        </td>
+                        <td class="p-3 sm:p-4 italic text-gray-600 hidden sm:table-cell">${p.ชื่อวิทยาศาสตร์ || '-'}</td>
+                        <td class="p-3 sm:p-4 text-center space-x-1 sm:space-x-2">
+                            <button onclick="openEditModal('${p.รหัส}')" class="bg-blue-50 text-blue-600 hover:bg-blue-100 px-2.5 py-1 rounded-lg text-xs font-semibold transition shadow-sm">แก้ไข</button>
+                            <button onclick="showQrCode('${p.รหัส}', '${p.ชื่อพรรณไม้}')" class="bg-emerald-50 text-emerald-600 hover:bg-emerald-100 px-2.5 py-1 rounded-lg text-xs font-semibold transition shadow-sm">QR</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // แก้ไขปัญหารหัสนับซ้ำ 30 เกินไปเป็น 31 แล้วทับ
+        function openAddModal() {
+            document.getElementById('modal-title').innerText = "เพิ่มพรรณไม้ใหม่";
+            
+            let maxNum = 0;
+            plantsList.forEach(p => {
+                if (p.รหัส && String(p.รหัส).includes('plant1-')) {
+                    const numPart = parseInt(String(p.รหัส).replace('plant1-', ''), 10);
+                    if (!isNaN(numPart) && numPart > maxNum) {
+                        maxNum = numPart;
+                    }
+                }
+            });
+            const nextNum = maxNum + 1;
+            
+            document.getElementById('m-code').value = `plant1-${String(nextNum).padStart(4, '0')}`;
+            document.getElementById('m-name').value = '';
+            document.getElementById('m-local').value = '';
+            document.getElementById('m-sci').value = '';
+            document.getElementById('m-family').value = '';
+            document.getElementById('m-botany').value = '';
+            document.getElementById('m-prop').value = '';
+            document.getElementById('m-img').value = '';
+            document.getElementById('m-img-file').value = '';
+            document.getElementById('plant-modal').classList.remove('hidden');
+        }
+
+        function openEditModal(code) {
+            const p = plantsList.find(x => String(x.รหัส).trim() === String(code).trim());
+            if (!p) return;
+            document.getElementById('modal-title').innerText = "แก้ไขข้อมูลพรรณไม้";
+            document.getElementById('m-code').value = p.รหัส;
+            document.getElementById('m-name').value = p.ชื่อพรรณไม้ || '';
+            document.getElementById('m-local').value = p.ชื่อท้องถิ่น || '';
+            document.getElementById('m-sci').value = p.ชื่อวิทยาศาสตร์ || '';
+            document.getElementById('m-family').value = p.ชื่อวงศ์ || '';
+            document.getElementById('m-botany').value = p.ลักษณะทางพฤกษศาสตร์ || '';
+            document.getElementById('m-prop').value = p.สรรพคุณ || '';
+            document.getElementById('m-img').value = p.รูปภาพ || '';
+            document.getElementById('m-img-file').value = '';
+            document.getElementById('plant-modal').classList.remove('hidden');
+        }
+
+        function closePlantModal() {
+            document.getElementById('plant-modal').classList.add('hidden');
+        }
+
+        document.getElementById('m-img-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    document.getElementById('m-img').value = reader.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // แก้ไขไม่ให้รีเฟรชหน้าเองเวลากดบันทึก
+        function savePlantData() {
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.disabled = true;
+            saveBtn.innerText = 'กำลังบันทึก...';
+
+            const payload = {
+                action: 'addOrUpdate',
+                ลำดับ: plantsList.length + 1,
+                รหัส: document.getElementById('m-code').value,
+                ชื่อพรรณไม้: document.getElementById('m-name').value,
+                ชื่อท้องถิ่น: document.getElementById('m-local').value,
+                ชื่อวิทยาศาสตร์: document.getElementById('m-sci').value,
+                ชื่อวงศ์: document.getElementById('m-family').value,
+                ลักษณะทางพฤกษศาสตร์: document.getElementById('m-botany').value,
+                สรรพคุณ: document.getElementById('m-prop').value,
+                รูปภาพ: document.getElementById('m-img').value
+            };
+
+            fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) })
+                .then(res => res.json())
+                .then(res => {
+                    saveBtn.disabled = false;
+                    saveBtn.innerText = 'บันทึก';
+                    if (res.status === 'success' || res.result === 'success') {
+                        closePlantModal();
+                        alert('บันทึกข้อมูลสำเร็จ!');
+                        // อัปเดตตารางแอดมินทันทีโดยไม่รีเฟรชหน้าเว็บ
+                        fetchAllPlants(() => {
+                            renderAdminTable();
+                        });
+                    } else {
+                        alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
+                    }
+                })
+                .catch(err => {
+                    saveBtn.disabled = false;
+                    saveBtn.innerText = 'บันทึก';
+                    alert('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
+                });
+        }
+
+        function showQrCode(code, name) {
+            document.getElementById('qr-plant-title').innerText = `${code} : ${name}`;
+            document.getElementById('qr-modal').classList.remove('hidden');
+            const targetUrl = window.location.origin + window.location.pathname + `?id=${code}`;
+            const canvas = document.getElementById('qrcode-canvas');
+            QRCode.toCanvas(canvas, targetUrl, { width: 180 }, function (error) {
+                if (error) console.error(error);
+                document.getElementById('download-qr-btn').href = canvas.toDataURL("image/png");
+            });
+        }
+
+        function closeQrModal() {
+            document.getElementById('qr-modal').classList.add('hidden');
+        }
+    </script>
 </body>
 </html>
