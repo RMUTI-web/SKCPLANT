@@ -221,6 +221,18 @@
         let isAdminLoggedIn = false;
         let html5QrCode = null;
 
+        // แปลงไฟล์รูปภาพเป็น Base64 เมื่อมีการเลือกไฟล์
+        document.getElementById('m-img-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    document.getElementById('m-img').value = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
         function showToast(message) {
             const toast = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = message;
@@ -368,20 +380,22 @@
             });
         }
 
-        // Logic การเจนรหัสใหม่ Auto รันได้ไม่จำกัด (แก้ไขจุดรันแล้วไม่เพิ่มแล้ว)
+        // Logic การรันรหัสใหม่ ดึงเฉพาะตัวเลข 4 หลักส่วนท้าย
         function openAddModal() {
             document.getElementById('modal-title').innerText = "เพิ่มพรรณไม้ใหม่";
             let maxNum = 0;
             
-            plantsList.forEach(p => {
-                if (p.รหัส) {
-                    const match = String(p.รหัส).match(/\d+/);
-                    if (match) {
-                        const num = parseInt(match[0], 10);
-                        if (num > maxNum) maxNum = num;
+            if (Array.isArray(plantsList) && plantsList.length > 0) {
+                plantsList.forEach(p => {
+                    if (p && p.รหัส) {
+                        const match = String(p.รหัส).match(/\d+$/);
+                        if (match) {
+                            const num = parseInt(match[0], 10);
+                            if (num > maxNum) maxNum = num;
+                        }
                     }
-                }
-            });
+                });
+            }
 
             const nextNum = maxNum + 1;
             document.getElementById('m-code').value = `plant1-${String(nextNum).padStart(4, '0')}`;
@@ -416,99 +430,78 @@
             document.getElementById('plant-modal').classList.add('hidden');
         }
 
-     // ฟังก์ชันลบพรรณไม้ (ปรับปรุงการส่งข้อมูล)
-function deletePlant(code, name) {
-    if (confirm(`คุณต้องการลบพรรณไม้ "${name}" (${code}) ใช่หรือไม่?`)) {
-        showToast("⏳ กำลังลบข้อมูล...");
-        
-        const formData = new URLSearchParams();
-        formData.append('action', 'delete');
-        formData.append('รหัส', code);
+        function deletePlant(code, name) {
+            if (confirm(`คุณต้องการลบพรรณไม้ "${name}" (${code}) ใช่หรือไม่?`)) {
+                showToast("⏳ กำลังลบข้อมูล...");
+                
+                const formData = new URLSearchParams();
+                formData.append('action', 'delete');
+                formData.append('รหัส', code.trim());
 
-        fetch(API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: formData.toString()
-        })
-        .then(res => res.json())
-        .then(res => {
-            if (res.status === 'success') {
-                showToast("🗑️ ลบข้อมูลเรียบร้อยแล้ว");
-                fetchAllPlants(() => renderAdminTable());
-            } else {
-                showToast("❌ ลบไม่สำเร็จ: " + (res.message || "ไม่พบรหัสนี้ในตาราง"));
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            showToast("❌ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
-        });
-    }
-}
-
-// ฟังก์ชันบันทึก/แก้ไขพรรณไม้ (ปรับปรุงการส่งข้อมูล)
-function savePlantData() {
-    const saveBtn = document.getElementById('save-btn');
-    saveBtn.disabled = true;
-    saveBtn.innerText = 'กำลังบันทึก...';
-
-    const formData = new URLSearchParams();
-    formData.append('action', 'addOrUpdate');
-    formData.append('รหัส', document.getElementById('m-code').value);
-    formData.append('ชื่อพรรณไม้', document.getElementById('m-name').value);
-    formData.append('ชื่อท้องถิ่น', document.getElementById('m-local').value);
-    formData.append('ชื่อวิทยาศาสตร์', document.getElementById('m-sci').value);
-    formData.append('ชื่อวงศ์', document.getElementById('m-family').value);
-    formData.append('ลักษณะทางพฤกษศาสตร์', document.getElementById('m-botany').value);
-    formData.append('สรรพคุณ', document.getElementById('m-prop').value);
-    formData.append('รูปภาพ', document.getElementById('m-img').value);
-
-    fetch(API_URL, { 
-        method: 'POST', 
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: formData.toString() 
-    })
-    .then(res => res.json())
-    .then(res => {
-        saveBtn.disabled = false;
-        saveBtn.innerText = 'บันทึก';
-        if (res.status === 'success') {
-            closePlantModal();
-            showToast("✅ บันทึกข้อมูลสำเร็จ");
-            fetchAllPlants(() => renderAdminTable());
-        } else {
-            showToast("❌ เกิดข้อผิดพลาดในการบันทึก");
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        saveBtn.disabled = false;
-        saveBtn.innerText = 'บันทึก';
-        showToast("❌ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
-    });
-}
-            fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) })
+                fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData.toString()
+                })
                 .then(res => res.json())
                 .then(res => {
-                    saveBtn.disabled = false;
-                    saveBtn.innerText = 'บันทึก';
-                    if (res.status === 'success' || res.result === 'success') {
-                        closePlantModal();
-                        showToast("✅ บันทึกข้อมูลสำเร็จ");
+                    if (res.status === 'success') {
+                        showToast("🗑️ ลบข้อมูลเรียบร้อยแล้ว");
                         fetchAllPlants(() => renderAdminTable());
                     } else {
-                        showToast("❌ เกิดข้อผิดพลาดในการบันทึก");
+                        showToast("❌ " + (res.message || "ลบไม่สำเร็จ"));
                     }
                 })
-                .catch(() => {
-                    saveBtn.disabled = false;
-                    saveBtn.innerText = 'บันทึก';
+                .catch(err => {
+                    console.error(err);
                     showToast("❌ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
                 });
+            }
+        }
+
+        function savePlantData() {
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.disabled = true;
+            saveBtn.innerText = 'กำลังบันทึก...';
+
+            const formData = new URLSearchParams();
+            formData.append('action', 'addOrUpdate');
+            formData.append('รหัส', document.getElementById('m-code').value);
+            formData.append('ชื่อพรรณไม้', document.getElementById('m-name').value);
+            formData.append('ชื่อท้องถิ่น', document.getElementById('m-local').value);
+            formData.append('ชื่อวิทยาศาสตร์', document.getElementById('m-sci').value);
+            formData.append('ชื่อวงศ์', document.getElementById('m-family').value);
+            formData.append('ลักษณะทางพฤกษศาสตร์', document.getElementById('m-botany').value);
+            formData.append('สรรพคุณ', document.getElementById('m-prop').value);
+            formData.append('รูปภาพ', document.getElementById('m-img').value);
+
+            fetch(API_URL, { 
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString() 
+            })
+            .then(res => res.json())
+            .then(res => {
+                saveBtn.disabled = false;
+                saveBtn.innerText = 'บันทึก';
+                if (res.status === 'success') {
+                    closePlantModal();
+                    showToast("✅ บันทึกข้อมูลสำเร็จ");
+                    fetchAllPlants(() => renderAdminTable());
+                } else {
+                    showToast("❌ เกิดข้อผิดพลาดในการบันทึก");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                saveBtn.disabled = false;
+                saveBtn.innerText = 'บันทึก';
+                showToast("❌ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
+            });
         }
 
         function showQrCode(code, name) {
