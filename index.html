@@ -152,7 +152,7 @@
                     </button>
                 </div>
 
-                <div id="loading" class="glass-card rounded-[2rem] p-8 text-center shadow-xl text-slate-500 animate-pulse border border-white/40 text-xs">
+                <div id="loading" class="glass-card rounded-[2rem] p-8 text-center shadow-xl text-slate-500 border border-white/40 text-xs">
                     <div class="inline-block w-6 h-6 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin mb-2"></div>
                     <p class="font-medium">กำลังโหลดข้อมูลพฤกษศาสตร์...</p>
                 </div>
@@ -266,6 +266,10 @@
                     <label class="font-medium text-slate-500">รหัสพรรณไม้ (Auto)</label>
                     <input type="text" id="m-code" readonly class="w-full p-2 bg-slate-100 border border-slate-200 rounded-xl text-slate-500 mt-0.5 font-mono">
                 </div>
+                <div>
+                    <label class="font-medium text-slate-600">URL รูปภาพป้ายเดิมในป่า (ถ้ามี)</label>
+                    <input type="text" id="m-old-url" placeholder="https://..." class="w-full p-2 bg-white/80 border border-slate-200 rounded-xl mt-0.5 focus:ring-2 focus:ring-emerald-500">
+                </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div><label class="font-medium text-slate-600">ชื่อพรรณไม้</label><input type="text" id="m-name" class="w-full p-2 bg-white/80 border border-slate-200 rounded-xl mt-0.5 focus:ring-2 focus:ring-emerald-500"></div>
                     <div><label class="font-medium text-slate-600">ชื่อท้องถิ่น</label><input type="text" id="m-local" class="w-full p-2 bg-white/80 border border-slate-200 rounded-xl mt-0.5 focus:ring-2 focus:ring-emerald-500"></div>
@@ -305,7 +309,7 @@
 
     <!-- SCRIPT -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwEA2RQ8ouqr3WBkkCHkxgdJNj6iy6J7KqYrBmCLiItEmuWX4rt2wPAuhSNMhADOtsldQ/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbxRIlLWA520s3FBH3qvmDCFg8pRDXlD3DIKyd8AowNrgLsDJes_IPbJpJGJhMP-2gV1FA/exec";
         
         let plantsList = [];
         let isAdminLoggedIn = false;
@@ -408,8 +412,17 @@
             document.getElementById('content').classList.add('hidden');
 
             fetchAllPlants((data) => {
-                const plant = data.find(p => String(p.รหัส).trim() === String(id).trim());
+                const rawScan = String(id || '').trim();
+
+                // ค้นหาว่าตรงกับรหัสระบบ หรือตรงกับ URL รูปเดิมในป่า
+                const plant = data.find(p => {
+                    const myCode = String(p.รหัส || '').trim();
+                    const oldUrl = String(p.URLป้ายเดิม || '').trim();
+                    return myCode === rawScan || (oldUrl && rawScan.includes(oldUrl));
+                });
+
                 document.getElementById('loading').style.display = 'none';
+
                 if (plant) {
                     document.getElementById('content').classList.remove('hidden');
                     document.getElementById('plant-code').innerText = plant.รหัส;
@@ -421,7 +434,13 @@
                     document.getElementById('properties-desc').innerText = plant.สรรพคุณ || 'ไม่มีข้อมูล';
                     if (plant.รูปภาพ) document.getElementById('plant-img').src = plant.รูปภาพ;
                 } else {
-                    document.getElementById('loading').innerHTML = '<p class="text-rose-500 font-medium text-xs">ไม่พบข้อมูลพรรณไม้รหัสนี้</p><button onclick="switchToScannerView()" class="mt-3 bg-emerald-700 text-white px-4 py-1.5 rounded-xl text-xs">กลับไปสแกนใหม่</button>';
+                    document.getElementById('loading').innerHTML = `
+                        <div class="space-y-2 p-1">
+                            <p class="text-rose-500 font-medium text-xs">ไม่พบข้อมูลพรรณไม้สำหรับ QR Code นี้</p>
+                            <p class="text-[10px] text-slate-400 bg-slate-100/80 p-2 rounded-xl break-all">ข้อมูลที่สแกนได้: ${rawScan}</p>
+                            <button onclick="switchToScannerView()" class="mt-2 bg-emerald-700 text-white px-4 py-1.5 rounded-xl text-xs">กลับไปสแกนใหม่</button>
+                        </div>
+                    `;
                     document.getElementById('loading').style.display = 'block';
                 }
             });
@@ -490,6 +509,7 @@
 
             const nextNum = maxNum + 1;
             document.getElementById('m-code').value = `plant1-${String(nextNum).padStart(4, '0')}`;
+            document.getElementById('m-old-url').value = '';
             document.getElementById('m-name').value = '';
             document.getElementById('m-local').value = '';
             document.getElementById('m-sci').value = '';
@@ -506,6 +526,7 @@
             if (!p) return;
             document.getElementById('modal-title').innerText = "แก้ไขข้อมูลพรรณไม้";
             document.getElementById('m-code').value = p.รหัส;
+            document.getElementById('m-old-url').value = p.URLป้ายเดิม || '';
             document.getElementById('m-name').value = p.ชื่อพรรณไม้ || '';
             document.getElementById('m-local').value = p.ชื่อท้องถิ่น || '';
             document.getElementById('m-sci').value = p.ชื่อวิทยาศาสตร์ || '';
@@ -557,6 +578,7 @@
             const payload = {
                 action: 'addOrUpdate',
                 รหัส: document.getElementById('m-code').value,
+                URLป้ายเดิม: document.getElementById('m-old-url').value,
                 ชื่อพรรณไม้: document.getElementById('m-name').value,
                 ชื่อท้องถิ่น: document.getElementById('m-local').value,
                 ชื่อวิทยาศาสตร์: document.getElementById('m-sci').value,
